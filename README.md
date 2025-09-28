@@ -22,9 +22,9 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 <details>
 <summary>Click to expand</summary>
 
-使用 [SpaceRanger](https://www.cnblogs.com/huanping/p/16839765.html)
-
 ![outs](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/SpaceRanger_outs.jpg)
+
+使用 [SpaceRanger](https://www.cnblogs.com/huanping/p/16839765.html)
 
 - filtered_feature_bc_matrix [folder] 跟单细胞一样的三个.gz文件，矩阵、基因名称和barcode名称。
 - filtered_feature_bc_matrix.h5 本质上跟上面的文件夹存储的信息是一致的，都是空间转录组表达矩阵的信息。还包含了一些metadata信息，包括SpaceRanger版本信息，测序实验试剂信息等，直接读取这个h5文件包含的信息更多。
