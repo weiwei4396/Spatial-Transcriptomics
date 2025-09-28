@@ -16,3 +16,12 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 </details>
 
 
+2.SpaceRanger outs folder
+<details>
+<summary>Click to expand</summary>
+使用 [SpaceRanger](https://www.cnblogs.com/huanping/p/16839765.html)
+
+
+</details>
+
+
