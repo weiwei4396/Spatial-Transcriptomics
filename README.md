@@ -14,14 +14,15 @@ scverse 是一个专注于生命科学基础工具的组织和生态系统，最
 
 AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量的多维数据(如UMAP) 储存在obsm和varm中, 图结构(比如细胞之间的关系或基因之间的关系)存储在obsp和varp中, 任何不适合其他槽位的非结构化数据都可以存储在uns中, 还可以通过layers存储矩阵X的额外值。例如, 可以在名为counts的层中存储未经标准化的原始计数数据, 而在默认的层中存储标准化后的数据。
 
-AnnData(https://mp.weixin.qq.com/s/0OFRSB3BZcNltHkp_1VG1Q)
+[AnnData](https://mp.weixin.qq.com/s/0OFRSB3BZcNltHkp_1VG1Q)
 </details>
 
 
 2.***SpaceRanger outs folder***
 <details>
 <summary>Click to expand</summary>
-使用 SpaceRanger(https://www.cnblogs.com/huanping/p/16839765.html)
+使用 [SpaceRanger](https://www.cnblogs.com/huanping/p/16839765.html)
+
 ![outs](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/SpaceRanger_outs.jpg)
 
 - filtered_feature_bc_matrix [folder] 跟单细胞一样的三个.gz文件，矩阵、基因名称和barcode名称。
