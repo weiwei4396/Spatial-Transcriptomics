@@ -1,7 +1,7 @@
 # Spatial-Transcriptomics
 Learning some analysis code.
 
-AnnData data structure
+1.AnnData data structure
 <details>
 <summary>Click to expand</summary>
 
