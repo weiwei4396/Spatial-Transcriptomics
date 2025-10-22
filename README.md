@@ -24,6 +24,15 @@ scverse 是一个专注于生命科学基础工具的组织和生态系统，最
 AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量的多维数据(如UMAP) 储存在obsm和varm中, 图结构(比如细胞之间的关系或基因之间的关系)存储在obsp和varp中, 任何不适合其他槽位的非结构化数据都可以存储在uns中, 还可以通过layers存储矩阵X的额外值。例如, 可以在名为counts的层中存储未经标准化的原始计数数据, 而在默认的层中存储标准化后的数据。
 
 [AnnData](https://mp.weixin.qq.com/s/0OFRSB3BZcNltHkp_1VG1Q)
+
+- obs: 'in_tissue', 'array_row', 'array_col', 'gender', 'age', 'tissue', 'Strain', 'n_genes_by_counts', 'log1p_n_genes_by_counts', 'total_counts', 'log1p_total_counts', 'pct_counts_in_top_50_genes', 'pct_counts_in_top_100_genes', 'pct_counts_in_top_200_genes', 'pct_counts_in_top_500_genes', 'total_counts_mt', 'log1p_total_counts_mt', 'pct_counts_mt', 'n_counts', 'n_genes'
+- var: 'highly_variable', 'means', 'dispersions', 'dispersions_norm'
+- uns: 'spatial', 'log1p', 'hvg', 'pca', 'neighbors', 'umap', 'tsne', 'tissue_colors'
+- obsm: 'spatial', 'X_pca', 'X_umap', 'X_tsne'
+- varm: 'PCs'
+- obsp: 'distances', 'connectivities'
+
+
 </details>
 
 
