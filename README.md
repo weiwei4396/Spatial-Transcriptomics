@@ -86,6 +86,34 @@ seqkit subseq -j 10 -r 27:46  ${fastq2} -o test27-46.fastq.gz
 # 使用自己写的脚本合并;
 python concat_me.py -a test1-8.fastq.gz -b test27-46.fastq.gz -o BarcodeUMI_R1.fastq.gz
 
+# 使用STARsolo将数据mapping;
+/data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --genomeDir ${MAP} \
+  --outFileNamePrefix ${st_path}/STARsolo/${sample} \
+  --readFilesCommand cat \
+  --readFilesIn /data/database/MAGIC-seq-NG/Olfb/OlfBulb/Olf_R2.fastq /data/database/MAGIC-seq-NG/Olfb/OlfBulb/Olf_R1.fastq \
+  --outSAMattributes NH HI nM AS CR UR CY UY CB UB GX GN sS sQ sM sF \
+  --outSAMtype BAM SortedByCoordinate \
+  --limitBAMsortRAM 121539607552 \
+  --soloType CB_UMI_Simple \
+  --soloCBwhitelist ${whitelist} \
+  --soloCBstart 1 \
+  --soloCBlen 16 \
+  --soloUMIstart 17 \
+  --soloUMIlen 12 \
+  --soloFeatures Gene GeneFull SJ Velocyto \
+  --soloMultiMappers EM \
+  --soloUMIdedup 1MM_All \
+  --soloCellFilter EmptyDrops_CR \
+  --soloCellReadStats Standard \
+  --clipAdapterType CellRanger4 \
+  --outReadsUnmapped Fastx \
+  --runThreadN ${t_num}
+
+# 将STARsolo生成的基因表达转化为Anndata;
+
+
+
+
 ```
 
 
