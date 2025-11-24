@@ -61,9 +61,30 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 <details>
 <summary>Click</summary>
 
-- 1.数据预处理, 提取Read1的barcode和UMI, 整体得到只由Barcode和UMI组成序列; 根据实验设计是否有barcodeZ, 提取不同的索引; 三宫格或九宫格: BarcodeX[1-8], BarcodeY+UMI[27-46]; 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72];
+- 1.数据预处理, 提取Read1的barcode和UMI, 得到只由Barcode和UMI组成序列; 根据实验设计是否有barcodeZ, 提取不同的索引; 三宫格或九宫格: BarcodeX[1-8], BarcodeY+UMI[27-46]; 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72];
 
 ```shell
+# 提前设置文件;
+sampath=/data/database/MAGIC-seq-NG/Olfb
+sample=OlfBulb
+fastq1=${sampath}/${sample}_R1.fastq.gz
+fastq2=${sampath}/${sample}_R2.fastq.gz
+whitelist=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/whitelist
+ID=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/T9-ids-barcode.txt
+st_path=${sampath}/${sample}
+
+MAP=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/star2710b
+ANN=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/genes/genes.gtf
+
+log_file=${sampath}/${sample}_st_log.txt
+t_num=32
+
+# 提取三宫格和九宫格的barcode和umi;
+seqkit subseq -j 10 -r 1:8  ${fastq1} -o test1-8.fastq.gz
+seqkit subseq -j 10 -r 27:46  ${fastq2} -o test27-46.fastq.gz
+
+# 使用自己写的脚本合并;
+python concat_me.py -a test1-8.fastq.gz -b test27-46.fastq.gz -o BarcodeUMI_R1.fastq.gz
 
 ```
 
