@@ -61,6 +61,11 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 <details>
 <summary>Click</summary>
 
+- 1.数据预处理, 提取Read1的barcode和UMI, 整体得到只由Barcode和UMI组成序列; 根据实验设计是否有barcodeZ, 提取不同的索引; 三宫格或九宫格: BarcodeX[1-8], BarcodeY+UMI[27-46]; 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72];
+
+```shell
+
+```
 
 
 
