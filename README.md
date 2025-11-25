@@ -1,7 +1,7 @@
 # Spatial-Transcriptomics
 Learning some analysis code.
 
-## 1.***SpaceRanger***
+## 1.**SpaceRanger**
 <details>
 <summary>Click</summary>
 
@@ -10,7 +10,7 @@ Learning some analysis code.
 
 
 
-## 2.***AnnData data structure***
+## 2.**AnnData data structure**
 <details>
 <summary>Click to expand</summary>
 
@@ -36,7 +36,7 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 </details>
 
 
-## 3.***SpaceRanger outs folder***
+## 3.**SpaceRanger outs folder**
 <details>
 <summary>Click to expand</summary>
 
@@ -57,7 +57,7 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 </details>
 
 
-## 4.***MAGIC-seq & Decoder-seq Analysis Pipline***
+## 4.**MAGIC-seq & Decoder-seq Analysis Pipline**
 <details>
 <summary>Click</summary>
 
@@ -127,7 +127,7 @@ python concat_me.py -a test1-8.fastq.gz -b test27-46.fastq.gz -o BarcodeUMI_R1.f
 
 
 
-## *** Question & Answer ***
+## **Question & Answer**
 <details>
 <summary>Click</summary>
 
