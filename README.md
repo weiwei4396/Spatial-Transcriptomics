@@ -131,7 +131,15 @@ python concat_me.py -a test1-8.fastq.gz -b test27-46.fastq.gz -o BarcodeUMI_R1.f
 <details>
 <summary>Click</summary>
 
-# 1.
+### 1. Segment Anything Model (SAM)
+
+
+
+### 2. image registration (图像配准)
+
+- 图像配准就是把两张不同来源, 不同大小, 不同角度的图像对齐, 使它们的同一个位置在像素空间上对应起来;
+- 在H&E图和对应的spatial spot图上的同一个位置选取参考点, 两个对应点通常用于仿射变换, 线性缩放, 旋转, 平移;
+
 
 
 
