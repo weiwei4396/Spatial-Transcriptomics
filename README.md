@@ -3,7 +3,7 @@ Learning some analysis code.
 
 ## 1.**SpaceRanger**
 <details>
-<summary>Click</summary>
+<summary> </summary>
 
 
 </details>
@@ -12,7 +12,7 @@ Learning some analysis code.
 
 ## 2.**AnnData data structure**
 <details>
-<summary>Click to expand</summary>
+<summary> </summary>
 
 ![AnnData](https://raw.githubusercontent.com/weiwei4396/Spatial-Transcriptomics/main/picture/anndata.jpg)
 scverse 是一个专注于生命科学基础工具的组织和生态系统，最初聚焦于单细胞数据分析。它的优势在于出色的扩展性、灵活性以及与现有Python数据科学和机器学习工具的强大互操作性。
@@ -38,7 +38,7 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 
 ## 3.**SpaceRanger outs folder**
 <details>
-<summary>Click to expand</summary>
+<summary> </summary>
 
 ![outs](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/SpaceRanger_outs.jpg)
 
@@ -59,26 +59,33 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 
 ## 4.**MAGIC-seq & Decoder-seq Analysis Pipline**
 <details>
-<summary>Click</summary>
+<summary> </summary>
 
 - 1.数据预处理, 提取Read1的barcode和UMI, 得到只由Barcode和UMI组成序列; 根据实验设计是否有barcodeZ, 提取不同的索引; 三宫格或九宫格: BarcodeX[1-8], BarcodeY+UMI[27-46]; 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72];
 
 ```shell
-# 提前设置文件;
+# 设置输入文件; sampath为当前测序的R1.fastq.gz和R2.fastq.gz所在的文件夹;
 sampath=/data/database/MAGIC-seq-NG/Olfb
 sample=OlfBulb
 fastq1=${sampath}/${sample}_R1.fastq.gz
 fastq2=${sampath}/${sample}_R2.fastq.gz
+
+# whitelist为所有的barcode的组合, 如X和Y共4900种barcode, 每个barcode占一行;
 whitelist=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/whitelist
 ID=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/T9-ids-barcode.txt
+
+# 建立的输出文件夹;
 st_path=${sampath}/${sample}
 
+# 参考基因组, 小鼠/人;
+# 创建STAR的参考基因组index;
+# /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --runThreadN 16 --runMode genomeGenerate --genomeDir star2710b --genomeFastaFiles /data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/fasta/genome.fa --sjdbGTFfile /data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/genes/genes.gtf --sjdbOverhang 100 --genomeSAindexNbases 14 --genomeChrBinNbits 18 --genomeSAsparseD 3
 MAP=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/star2710b
 ANN=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/genes/genes.gtf
 
 log_file=${sampath}/${sample}_st_log.txt
 t_num=32
-
+seqkit v2.0.0
 # 提取三宫格和九宫格的barcode和umi;
 seqkit subseq -j 10 -r 1:8  ${fastq1} -o test1-8.fastq.gz
 seqkit subseq -j 10 -r 27:46  ${fastq2} -o test27-46.fastq.gz
