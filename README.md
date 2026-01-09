@@ -117,8 +117,6 @@ python concat_me.py -a test1-8.fastq.gz -b test27-46.fastq.gz -o BarcodeUMI_R1.f
 ```
 
 
-
-
 </details>
 
 
