@@ -107,17 +107,20 @@ do
     rm -rf ${st_path}/out/part_${file}_test27-46.fastq.gz
 done
 
+cat ${st_path}/out/*_reformat_R1.fastq.gz > ${st_path}/out/${sample}_reformat_R1.fastq.gz
+rm -rf ${st_path}/out/${sample}_0*_reformat_R1.fastq.gz
+cat ${st_path}/out/*_reformat_R2.fastq.gz > ${st_path}/out/${sample}_reformat_R2.fastq.gz
+rm -rf ${st_path}/out/${sample}_0*_reformat_R2.fastq.gz
+rm -rf ${st_path}/split
 
 
 
-# 使用自己写的脚本合并;
-python concat_me.py -a test1-8.fastq.gz -b test27-46.fastq.gz -o BarcodeUMI_R1.fastq.gz
 
-# 使用STARsolo将数据mapping;
+# 使用STARsolo将数据比对;
 /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --genomeDir ${MAP} \
-  --outFileNamePrefix ${st_path}/STARsolo/${sample} \
-  --readFilesCommand cat \
-  --readFilesIn /data/database/MAGIC-seq-NG/Olfb/OlfBulb/Olf_R2.fastq /data/database/MAGIC-seq-NG/Olfb/OlfBulb/Olf_R1.fastq \
+  --outFileNamePrefix ${st_path}/STARsolo/${sample}_ \
+  --readFilesCommand zcat \
+  --readFilesIn ${st_path}/out/${sample}_cleaned_R2.fastq.gz ${st_path}/out/${sample}_cleaned_R1.fastq.gz \
   --outSAMattributes NH HI nM AS CR UR CY UY CB UB GX GN sS sQ sM sF \
   --outSAMtype BAM SortedByCoordinate \
   --limitBAMsortRAM 121539607552 \
@@ -135,6 +138,7 @@ python concat_me.py -a test1-8.fastq.gz -b test27-46.fastq.gz -o BarcodeUMI_R1.f
   --clipAdapterType CellRanger4 \
   --outReadsUnmapped Fastx \
   --runThreadN ${t_num}
+
 
 # 将STARsolo生成的基因表达转化为Anndata;
 
