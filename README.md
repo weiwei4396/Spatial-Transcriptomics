@@ -62,7 +62,7 @@ BarcodeX+BarcodeY, 两种Barcode
 <details>
 <summary> </summary>
 
-- 1.数据预处理, 提取Read1的barcode和UMI, 得到只由Barcode和UMI组成序列; 根据实验设计是否有barcodeZ, 提取不同的索引; 三宫格或九宫格: BarcodeX[1-8], BarcodeY+UMI[27-46]; 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72];
+- 1.数据预处理, 提取Read1的barcode和UMI, 得到只由Barcode和UMI组成序列; 根据实验设计是否有barcodeZ, 提取不同的索引; 三宫格或九宫格: BarcodeX[1-8], BarcodeY+UMI[27-46]; 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72]; STARsolo所需的read1格式为barcode+UMI; 因此设置为**BarcodeX/BarcodeY/UMI**或**BarcodeX/BarcodeY/BarcodeZ/UMI**;
 
 ```shell
 # 设置输入文件; sampath为当前测序的R1.fastq.gz和R2.fastq.gz所在的文件夹;
@@ -113,9 +113,10 @@ cat ${st_path}/out/*_reformat_R2.fastq.gz > ${st_path}/out/${sample}_reformat_R2
 rm -rf ${st_path}/out/${sample}_0*_reformat_R2.fastq.gz
 rm -rf ${st_path}/split
 
+```
 
-
-
+- 2.比对; 将数据比对到参考基因组, 需要注意的是提供的reads先输入reads2再输入reads1;
+```shell
 # 使用STARsolo将数据比对;
 /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --genomeDir ${MAP} \
   --outFileNamePrefix ${st_path}/STARsolo/${sample}_ \
@@ -138,14 +139,12 @@ rm -rf ${st_path}/split
   --clipAdapterType CellRanger4 \
   --outReadsUnmapped Fastx \
   --runThreadN ${t_num}
-
-
-# 将STARsolo生成的基因表达转化为Anndata;
-
-
-
-
 ```
+
+
+- 3.将STARsolo生成的基因表达转化为Anndata;
+
+
 
 
 </details>
@@ -154,6 +153,10 @@ rm -rf ${st_path}/split
 BarcodeX+BarcodeY+BarcodeZ, 三种Barcode
 <details>
 <summary> </summary>
+
+
+
+
 
 </details>
 
