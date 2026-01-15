@@ -100,6 +100,7 @@ mkdir ${st_path}/out
 
 2.质控
 ```shell
+# TA建库需要运行这一步去接头;
 # AAGCAGTGGTATCAACGCAGAGTGAATGGG
 cutadapt -g AAGCAGTGGTATCAACGCAGAGT -e 0.01 -j ${t_num} -o ${st_path}/${sample}_reformat_cutadapt_R2.fastq.gz ${fastq2}
 
@@ -112,19 +113,17 @@ fastp -i ${fastq1} -I ${st_path}/${sample}_reformat_cutadapt_R2.fastq.gz \
 ```shell
 # 注意: seqkit需要版本 2.0.0, 至少已知 2.10.0 中 concat功能不能支持现在的分析;
 # 2.seqkit分割文件处理; 默认分成10份; 然后分别提取 BarcodeX和BarcodeY-UMI;
-# 创建输出文件目录;
-
 
 FileNum=10
-seqkit split2 -1 ${fastq1} -2 ${fastq2} -p $FileNum -O ${st_path}/split -f
+seqkit split2 -1 ${st_path}/${sample}_cleaned_R1.fastq.gz -2 ${st_path}/${sample}_cleaned_R2.fastq.gz -p $FileNum -O ${st_path}/split -f
 files=(001 002 003 004 005 006 007 008 009 010)
+
 for file in "${files[@]}"
 do
-    seqkit subseq -r 1:8 ${st_path}/split/${sample}_R1.part_${file}.fastq.gz -o ${st_path}/out/part_${file}_test1-8.fastq.gz
-    seqkit subseq -r 27:46 ${st_path}/split/${sample}_R1.part_${file}.fastq.gz -o ${st_path}/out/part_${file}_test27-46.fastq.gz
+    seqkit subseq -r 1:8 ${st_path}/split/${sample}_cleaned_R1.part_${file}.fastq.gz -o ${st_path}/out/part_${file}_test1-8.fastq.gz
+    seqkit subseq -r 27:46 ${st_path}/split/${sample}_cleaned_R1.part_${file}.fastq.gz -o ${st_path}/out/part_${file}_test27-46.fastq.gz
     seqkit concat ${st_path}/out/part_${file}_test1-8.fastq.gz ${st_path}/out/part_${file}_test27-46.fastq.gz -o ${st_path}/out/${sample}_${file}_reformat_R1.fastq.gz
-    # 这行代码是因为某些数据因为名称问题导致的错误;
-    seqkit replace -p " (.*)$" -r "" ${st_path}/split/${sample}_R2.part_${file}.fastq.gz -o ${st_path}/out/${sample}_${file}_reformat_R2.fastq.gz
+    seqkit replace -p " (.*)$" -r "" ${st_path}/split/${sample}_cleaned_R2.part_${file}.fastq.gz -o ${st_path}/out/${sample}_${file}_reformat_R2.fastq.gz
     rm -rf ${st_path}/out/part_${file}_test1-8.fastq.gz
     rm -rf ${st_path}/out/part_${file}_test27-46.fastq.gz
 done
@@ -145,7 +144,7 @@ rm -rf ${st_path}/split
 /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --genomeDir ${MAP} \
   --outFileNamePrefix ${st_path}/STARsolo/${sample}_ \
   --readFilesCommand zcat \
-  --readFilesIn ${st_path}/out/${sample}_cleaned_R2.fastq.gz ${st_path}/out/${sample}_cleaned_R1.fastq.gz \
+  --readFilesIn ${st_path}/out/${sample}_reformat_R2.fastq.gz ${st_path}/out/${sample}_reformat_R1.fastq.gz \
   --outSAMattributes NH HI nM AS CR UR CY UY CB UB GX GN sS sQ sM sF \
   --outSAMtype BAM SortedByCoordinate \
   --limitBAMsortRAM 121539607552 \
