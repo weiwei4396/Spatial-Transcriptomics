@@ -66,7 +66,7 @@ BarcodeX+BarcodeY, 两种Barcode
 - 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72];
 - STARsolo所需的read1格式为barcode+UMI; 因此设置为**BarcodeX/BarcodeY/UMI**或**BarcodeX/BarcodeY/BarcodeZ/UMI**;
 
-数据准备
+1.数据准备
 ```shell
 # 设置输入文件; sampath为当前测序的R1.fastq.gz和R2.fastq.gz所在的文件夹;
 sampath=/data/database/MAGIC-seq-NG/Olfb
@@ -94,8 +94,7 @@ mkdir ${st_path}/split
 mkdir ${st_path}/out
 ```
 
-去接头/质控
-
+2.质控
 ```shell
 # AAGCAGTGGTATCAACGCAGAGTGAATGGG
 cutadapt -g AAGCAGTGGTATCAACGCAGAGT -e 0.01 -j ${t_num} -o ${st_path}/${sample}_reformat_cutadapt_R2.fastq.gz ${fastq2}
@@ -105,8 +104,7 @@ fastp -i ${fastq1} -I ${st_path}/${sample}_reformat_cutadapt_R2.fastq.gz \
         -l 46 -x -g -w ${t_num} --detect_adapter_for_pe -j ${st_path}/${sample}.barcode.fastp.json -h ${st_path}/${sample}.barcode.fastp.html
 ```
 
-
-
+3.提取barcode和umi
 ```shell
 # 注意: seqkit需要版本 2.0.0, 至少已知 2.10.0 中 concat功能不能支持现在的分析;
 # 2.seqkit分割文件处理; 默认分成10份; 然后分别提取 BarcodeX和BarcodeY-UMI;
@@ -132,10 +130,12 @@ rm -rf ${st_path}/out/${sample}_0*_reformat_R1.fastq.gz
 cat ${st_path}/out/*_reformat_R2.fastq.gz > ${st_path}/out/${sample}_reformat_R2.fastq.gz
 rm -rf ${st_path}/out/${sample}_0*_reformat_R2.fastq.gz
 rm -rf ${st_path}/split
-
 ```
 
-- 2.比对; 将数据比对到参考基因组, 需要注意的是提供的reads先输入reads2再输入reads1;
+
+
+
+4.比对; 将数据比对到参考基因组, 需要注意的是提供的reads先输入reads2再输入reads1;
 ```shell
 # 使用STARsolo将数据比对;
 /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --genomeDir ${MAP} \
@@ -162,7 +162,7 @@ rm -rf ${st_path}/split
 ```
 
 
-- 3.将STARsolo生成的基因表达转化为Anndata;
+5.将STARsolo生成的基因表达转化为Anndata;
 
 
 
