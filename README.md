@@ -81,14 +81,18 @@ ID=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/T9-ids-barcode.
 # 参考基因组, 小鼠/人;
 # 创建STAR的参考基因组index;
 # /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --runThreadN 16 --runMode genomeGenerate --genomeDir star2710b --genomeFastaFiles /data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/fasta/genome.fa --sjdbGTFfile /data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/genes/genes.gtf --sjdbOverhang 100 --genomeSAindexNbases 14 --genomeChrBinNbits 18 --genomeSAsparseD 3
+# MAP=/data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/star2710b
+# ANN=/data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/genes/genes.gtf
 MAP=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/star2710b
 ANN=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/genes/genes.gtf
 
-log_file=${sampath}/${sample}_st_log.txt
+# 线程;
 t_num=16
 
-# 建立的输出文件夹;
+# 建立输出的文件和文件夹;
+log_file=${sampath}/${sample}_st_log.txt
 st_path=${sampath}/${sample}
+touch log_file
 mkdir ${st_path}
 mkdir ${st_path}/split
 mkdir ${st_path}/out
