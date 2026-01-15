@@ -66,6 +66,7 @@ BarcodeX+BarcodeY, 两种Barcode
 - 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72];
 - STARsolo所需的read1格式为barcode+UMI; 因此设置为**BarcodeX/BarcodeY/UMI**或**BarcodeX/BarcodeY/BarcodeZ/UMI**;
 
+数据准备
 ```shell
 # 设置输入文件; sampath为当前测序的R1.fastq.gz和R2.fastq.gz所在的文件夹;
 sampath=/data/database/MAGIC-seq-NG/Olfb
@@ -77,9 +78,6 @@ fastq2=${sampath}/${sample}_R2.fastq.gz
 whitelist=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/whitelist
 ID=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/T9-ids-barcode.txt
 
-# 建立的输出文件夹;
-st_path=${sampath}/${sample}
-
 # 参考基因组, 小鼠/人;
 # 创建STAR的参考基因组index;
 # /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --runThreadN 16 --runMode genomeGenerate --genomeDir star2710b --genomeFastaFiles /data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/fasta/genome.fa --sjdbGTFfile /data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/genes/genes.gtf --sjdbOverhang 100 --genomeSAindexNbases 14 --genomeChrBinNbits 18 --genomeSAsparseD 3
@@ -87,14 +85,33 @@ MAP=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/star2710b
 ANN=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/genes/genes.gtf
 
 log_file=${sampath}/${sample}_st_log.txt
-t_num=32
+t_num=16
 
-# 注意: seqkit需要版本 2.0.0, 至少已知 2.10.0 中 concat功能不能支持现在的分析;
-# 2.seqkit分割文件处理; 默认分成10份; 然后分别提取 BarcodeX和BarcodeY-UMI;
-# 创建输出文件目录;
+# 建立的输出文件夹;
+st_path=${sampath}/${sample}
 mkdir ${st_path}
 mkdir ${st_path}/split
 mkdir ${st_path}/out
+```
+
+去接头/质控
+
+```shell
+# AAGCAGTGGTATCAACGCAGAGTGAATGGG
+cutadapt -g AAGCAGTGGTATCAACGCAGAGT -e 0.01 -j ${t_num} -o ${st_path}/${sample}_reformat_cutadapt_R2.fastq.gz ${fastq2}
+
+fastp -i ${fastq1} -I ${st_path}/${sample}_reformat_cutadapt_R2.fastq.gz \
+        -o ${st_path}/${sample}_cleaned_R1.fastq.gz -O ${st_path}/${sample}_cleaned_R2.fastq.gz \
+        -l 46 -x -g -w ${t_num} --detect_adapter_for_pe -j ${st_path}/${sample}.barcode.fastp.json -h ${st_path}/${sample}.barcode.fastp.html
+```
+
+
+
+```shell
+# 注意: seqkit需要版本 2.0.0, 至少已知 2.10.0 中 concat功能不能支持现在的分析;
+# 2.seqkit分割文件处理; 默认分成10份; 然后分别提取 BarcodeX和BarcodeY-UMI;
+# 创建输出文件目录;
+
 
 FileNum=10
 seqkit split2 -1 ${fastq1} -2 ${fastq2} -p $FileNum -O ${st_path}/split -f
