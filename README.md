@@ -181,7 +181,37 @@ BarcodeX+BarcodeY+BarcodeZ, 三种Barcode
 - 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72];
 - STARsolo所需的read1格式为barcode+UMI; 因此设置为**BarcodeX/BarcodeY/UMI**或**BarcodeX/BarcodeY/BarcodeZ/UMI**;
 
+1.数据准备
+```shell
+# 设置输入文件; sampath为当前测序的R1.fastq.gz和R2.fastq.gz所在的文件夹;
+sampath=/data/database/MAGIC-seq-NG/20260121_second/20260121_second/00.mergeRawFq/STx170y170z7micebrain
+sample=STx170y170z7micebrain
+fastq1=${sampath}/${sample}_R1.fastq.gz
+fastq2=${sampath}/${sample}_R2.fastq.gz
 
+# whitelist为所有的barcode的组合, 如X和Y共4900种barcode, 每个barcode占一行;
+whitelist=/data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/whitelist.txt
+ID=/data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/M9_ST_ids_barcode_chip1_C18.txt
+
+# 参考基因组, 小鼠/人;
+# 创建STAR的参考基因组index;
+# /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --runThreadN 16 --runMode genomeGenerate --genomeDir star2710b --genomeFastaFiles /data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/fasta/genome.fa --sjdbGTFfile /data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/genes/genes.gtf --sjdbOverhang 100 --genomeSAindexNbases 14 --genomeChrBinNbits 18 --genomeSAsparseD 3
+# MAP=/data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/star2710b
+# ANN=/data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/genes/genes.gtf
+MAP=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/star2710b
+ANN=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/genes/genes.gtf
+
+# 线程;
+t_num=16
+
+# 建立输出的文件和文件夹;
+log_file=${sampath}/${sample}_st_log.txt
+st_path=${sampath}/${sample}
+touch log_file
+mkdir ${st_path}
+mkdir ${st_path}/split
+mkdir ${st_path}/out
+```
 
 
 
