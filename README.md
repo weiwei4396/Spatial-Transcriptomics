@@ -98,35 +98,26 @@ mkdir ${st_path}/split
 mkdir ${st_path}/out
 ```
 
-2.质控
-```shell
-# TA建库需要运行这一步去接头;
-# AAGCAGTGGTATCAACGCAGAGTGAATGGG
-cutadapt -g AAGCAGTGGTATCAACGCAGAGT -e 0.01 -j ${t_num} -o ${st_path}/${sample}_reformat_cutadapt_R2.fastq.gz ${fastq2}
-
-fastp -i ${fastq1} -I ${st_path}/${sample}_reformat_cutadapt_R2.fastq.gz \
-        -o ${st_path}/${sample}_cleaned_R1.fastq.gz -O ${st_path}/${sample}_cleaned_R2.fastq.gz \
-        -l 46 -x -g -w ${t_num} --detect_adapter_for_pe -j ${st_path}/${sample}.barcode.fastp.json -h ${st_path}/${sample}.barcode.fastp.html
-```
-
-3.提取barcode和umi
+2.提取barcode和umi
 ```shell
 # 注意: seqkit需要版本 2.0.0, 至少已知 2.10.0 中 concat功能不能支持现在的分析;
 # 2.seqkit分割文件处理; 默认分成10份; 然后分别提取 BarcodeX和BarcodeY-UMI;
 
 FileNum=10
-seqkit split2 -1 ${st_path}/${sample}_cleaned_R1.fastq.gz -2 ${st_path}/${sample}_cleaned_R2.fastq.gz -p $FileNum -O ${st_path}/split -f
+seqkit split2 -1 ${sampath}/${sample}_R1.fastq.gz -2 ${sampath}/${sample}_R2.fastq.gz -p $FileNum -O ${st_path}/split -f
+
 files=(001 002 003 004 005 006 007 008 009 010)
 
 for file in "${files[@]}"
 do
-    seqkit subseq -r 1:8 ${st_path}/split/${sample}_cleaned_R1.part_${file}.fastq.gz -o ${st_path}/out/part_${file}_test1-8.fastq.gz
-    seqkit subseq -r 27:46 ${st_path}/split/${sample}_cleaned_R1.part_${file}.fastq.gz -o ${st_path}/out/part_${file}_test27-46.fastq.gz
+    seqkit subseq -r 1:8 ${st_path}/split/${sample}_R1.part_${file}.fastq.gz -o ${st_path}/out/part_${file}_test1-8.fastq.gz
+    seqkit subseq -r 27:46 ${st_path}/split/${sample}_R1.part_${file}.fastq.gz -o ${st_path}/out/part_${file}_test27-46.fastq.gz
     seqkit concat ${st_path}/out/part_${file}_test1-8.fastq.gz ${st_path}/out/part_${file}_test27-46.fastq.gz -o ${st_path}/out/${sample}_${file}_reformat_R1.fastq.gz
-    seqkit replace -p " (.*)$" -r "" ${st_path}/split/${sample}_cleaned_R2.part_${file}.fastq.gz -o ${st_path}/out/${sample}_${file}_reformat_R2.fastq.gz
+    seqkit replace -p " (.*)$" -r "" ${st_path}/split/${sample}_R2.part_${file}.fastq.gz -o ${st_path}/out/${sample}_${file}_reformat_R2.fastq.gz
     rm -rf ${st_path}/out/part_${file}_test1-8.fastq.gz
     rm -rf ${st_path}/out/part_${file}_test27-46.fastq.gz
 done
+
 
 cat ${st_path}/out/*_reformat_R1.fastq.gz > ${st_path}/out/${sample}_reformat_R1.fastq.gz
 rm -rf ${st_path}/out/${sample}_0*_reformat_R1.fastq.gz
@@ -135,7 +126,16 @@ rm -rf ${st_path}/out/${sample}_0*_reformat_R2.fastq.gz
 rm -rf ${st_path}/split
 ```
 
+3.质控
+```shell
+# TA建库需要运行这一步去接头;
+# AAGCAGTGGTATCAACGCAGAGTGAATGGG
+cutadapt -g AAGCAGTGGTATCAACGCAGAGTGAATGGG -e 0.01 -j ${t_num} -o ${st_path}/${sample}_reformat_cutadapt_R2.fastq.gz ${st_path}/out/${sample}_reformat_R2.fastq.gz
 
+fastp -i ${st_path}/out/${sample}_reformat_R1.fastq.gz -I ${st_path}/${sample}_reformat_cutadapt_R2.fastq.gz \
+       -o ${st_path}/${sample}_cleaned_R1.fastq.gz -O ${st_path}/${sample}_cleaned_R2.fastq.gz \
+       -l 28 -x -g -w ${t_num} --detect_adapter_for_pe -j ${st_path}/${sample}.barcode.fastp.json -h ${st_path}/${sample}.barcode.fastp.html
+```
 
 
 4.比对; 将数据比对到参考基因组, 需要注意的是提供的reads先输入reads2再输入reads1;
@@ -144,7 +144,7 @@ rm -rf ${st_path}/split
 /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --genomeDir ${MAP} \
   --outFileNamePrefix ${st_path}/STARsolo/${sample}_ \
   --readFilesCommand zcat \
-  --readFilesIn ${st_path}/out/${sample}_reformat_R2.fastq.gz ${st_path}/out/${sample}_reformat_R1.fastq.gz \
+  --readFilesIn ${st_path}/${sample}_cleaned_R2.fastq.gz ${st_path}/${sample}_cleaned_R1.fastq.gz \
   --outSAMattributes NH HI nM AS CR UR CY UY CB UB GX GN sS sQ sM sF \
   --outSAMtype BAM SortedByCoordinate \
   --limitBAMsortRAM 121539607552 \
