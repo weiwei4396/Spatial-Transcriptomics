@@ -1,3 +1,4 @@
+# 此脚本已经弃用;
 # 2025.11.24
 # panwei
 # 这个代码是用来替代MAGIC-seq流程中合并seqkit concat两个文件的功能;
