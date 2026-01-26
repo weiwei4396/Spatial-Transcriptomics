@@ -230,7 +230,11 @@ python 0_stat_bcX.py --seq /data/database/MAGIC-seq-NG/20260121_second/20260121_
 ```
 
 2.查看read2中TSO含量的比例;
+```python
+python 2_TSO_ratio.py --tso AAGCAGTGGTATCAACGCAG --fq STx170y170z7micebrain_R2.fastq.gz
+```
 
+3.
 
 
 </details>
