@@ -213,10 +213,29 @@ mkdir ${st_path}/split
 mkdir ${st_path}/out
 ```
 
+</details>
+
+
+MAGIC-seq数据中对建库问题的排查
+<details>
+<summary> </summary>
+0.通过每个位置碱基含量百分比, 初步判断read1和read2的结果;
+
+1.按照确定位置找barcode, 查看正确的barcode比例;
+```python
+
+```
+
+2.查看read2中TSO含量的比例;
 
 
 
 </details>
+
+
+
+
+
 
 
 
