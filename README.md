@@ -221,9 +221,9 @@ MAGIC-seq数据中对建库问题的排查
 <summary> </summary>
 0.通过每个位置碱基含量百分比, 初步判断read1和read2的结果;
 
-1.按照确定位置找barcode, 查看正确的barcode比例;
+1.按照确定位置找barcode, 查看正确的barcode比例; 通过改变-m参数可以查看m个barcode是否正确;
 ```python
-
+python 0_stat_bcX.py --seq /data/database/MAGIC-seq-NG/20260121_second/20260121_second/00.mergeRawFq/STx170y170z7micebrain/Yes_haveT/T10/out/T10_reformat_R1.fastq.gz --bcx /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeA150.txt --bcy /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeB150.txt --bcz /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeC18.txt -m 1
 ```
 
 2.查看read2中TSO含量的比例;
