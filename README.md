@@ -245,6 +245,12 @@ blastn -query ${fa} -db /data/workdir/zhangj/database/nt_/core/core_nt \
 使用python脚本解析blastn_results.tsv中包含的物种信息;
 
 
+4.检查read1中barcode的自连情况, 顺便也可以看看barcode的连接情况;
+```python
+python barcodeXXX.py --fq STx170y170z7micebrain_R1.fastq.gz --bcx /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeA150.txt --bcy /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeB150.txt --bcz /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeC18.txt -m 3
+```
+
+
 
 </details>
 
