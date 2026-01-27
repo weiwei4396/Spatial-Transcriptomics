@@ -234,7 +234,16 @@ python 0_stat_bcX.py --seq /data/database/MAGIC-seq-NG/20260121_second/20260121_
 python 2_TSO_ratio.py --tso AAGCAGTGGTATCAACGCAG --fq STx170y170z7micebrain_R2.fastq.gz
 ```
 
-3.
+3.抽取部分reads使用blastn比对查看一些物种信息;
+```shell
+fa=/data/database/MAGIC-seq-NG/20260121_second/20260121_second/00.mergeRawFq/STx170y170z7micebrain/STAll_R2.fasta
+blastn -query ${fa} -db /data/workdir/zhangj/database/nt_/core/core_nt \
+        -out ./blastn_results.tsv -max_target_seqs 5 -task blastn \
+        -outfmt "6 std qlen slen btop ssciname staxid stitle" \
+        -num_threads 30
+```
+使用python脚本解析blastn_results.tsv中包含的物种信息;
+
 
 
 </details>
