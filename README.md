@@ -2,7 +2,7 @@
 Learning some analysis code.
 
 ## 0.**Introduction**
-### 基于测序的空间转录组学
+### Sequencing-based spatial transcriptomics
 <details>
 <summary> </summary>
 
@@ -14,7 +14,7 @@ Learning some analysis code.
 
 </details>
 
-### 基于图像的空间转录组学
+### Imaging-based spatial transcriptomics
 <details>
 <summary> </summary>
 
