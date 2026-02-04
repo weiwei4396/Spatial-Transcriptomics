@@ -2,7 +2,7 @@
 # panwei
 # 这个代码是用来查看TSO在read2中占比;
 # 脚本命令
-
+# python 2_TSO_ratio.py -t AAGCAGTGGTATCAACGCAGAGTGAATGGG -q oneBCST293TRNA_2.fq.gz
 
 import argparse
 import pyfastx
