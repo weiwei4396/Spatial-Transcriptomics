@@ -285,8 +285,16 @@ python barcodeXXX.py --fq STx170y170z7micebrain_R1.fastq.gz --bcx /data/database
 
 
 
+## 5.**空间转录组分析模式**
+
+###### 1.单变量分布模式：分析关注单个变量的空间分布, 而不考虑与其他变量的关系
+- 意义在于识别并量化单个生物特征(如一个基因、一种细胞类型)在组织空间中的分布规律, 它解决了"它在哪里表达/存在? 分布是否均匀? 是否有空间趋势或聚集? "的问题, 这是后续所有复杂分析的基础;
+- 空间趋势分析：
 
 
+参考
+
+[空转的分析模式](https://mp.weixin.qq.com/s/lnP752JylTJouBwkUuGT-Q)
 
 
 ## **Question & Answer**
