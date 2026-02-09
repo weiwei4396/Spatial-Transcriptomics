@@ -325,7 +325,7 @@ python barcodeXXX.py --fq STx170y170z7micebrain_R1.fastq.gz --bcx /data/database
 - 像素坐标: 每个像素有自己的位置, 左上角永远是 (0, 0), 向右为x+, 向下为y+;
 
 
-### Gene+ 数据
+### 3. Gene+ 数据
 ```shell
 wget -c --no-check-certificate "http://geneplus001.oss-cn-beijing.aliyuncs.com/kefu%2F20260105_ZhongGuoKeXueYuanBeiJingJiYinZuYanJiuSuoGuoJiaShengWuXinXiZhongXin-wubingqi-1_1.tar?Expires=1769112506&OSSAccessKeyId=LTAI4FyeijYaddJVHKYZ2yg7&Signature=6KgeXSOn1sQAFN0nCcII8v8k2D4%3D" -O first_data.tar
 tar -xvf first_data.tar
