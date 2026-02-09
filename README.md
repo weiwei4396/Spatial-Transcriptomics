@@ -247,6 +247,7 @@ mkdir ${st_path}/out
 MAGIC-seq数据中对建库问题的排查
 <details>
 <summary> </summary>
+
 0.通过每个位置碱基含量百分比, 初步判断read1和read2的结果;
 ```shell
 fastp -i in.R1.fq.gz -I in.R2.fq.gz -o out.R1.fq.gz -O out.R2.fq.gz
