@@ -249,7 +249,7 @@ MAGIC-seq数据中对建库问题的排查
 <summary> </summary>
 0.通过每个位置碱基含量百分比, 初步判断read1和read2的结果;
 ```shell
-
+fastp -i in.R1.fq.gz -I in.R2.fq.gz -o out.R1.fq.gz -O out.R2.fq.gz
 ```
 
 1.按照确定位置找barcode, 查看正确的barcode比例; 通过改变-m参数可以查看m个barcode是否正确;
