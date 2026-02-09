@@ -248,6 +248,9 @@ MAGIC-seq数据中对建库问题的排查
 <details>
 <summary> </summary>
 0.通过每个位置碱基含量百分比, 初步判断read1和read2的结果;
+```shell
+
+```
 
 1.按照确定位置找barcode, 查看正确的barcode比例; 通过改变-m参数可以查看m个barcode是否正确;
 ```shell
@@ -322,9 +325,14 @@ python barcodeXXX.py --fq STx170y170z7micebrain_R1.fastq.gz --bcx /data/database
 - 像素坐标: 每个像素有自己的位置, 左上角永远是 (0, 0), 向右为x+, 向下为y+;
 
 
-
-
-
+### Gene+ 数据
+```shell
+wget -c --no-check-certificate "http://geneplus001.oss-cn-beijing.aliyuncs.com/kefu%2F20260105_ZhongGuoKeXueYuanBeiJingJiYinZuYanJiuSuoGuoJiaShengWuXinXiZhongXin-wubingqi-1_1.tar?Expires=1769112506&OSSAccessKeyId=LTAI4FyeijYaddJVHKYZ2yg7&Signature=6KgeXSOn1sQAFN0nCcII8v8k2D4%3D" -O first_data.tar
+tar -xvf first_data.tar
+mv 20260105_ZhongGuoKeXueYuanBeiJingJiYinZuYanJiuSuoGuoJiaShengWuXinXiZhongXin-wubingqi-1_1 20260105_first
+cd 20260105_first
+md5sum -c MD5.txt
+```
 
 </details>
 
