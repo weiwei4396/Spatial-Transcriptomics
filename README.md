@@ -31,6 +31,9 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 
 [AnnData](https://mp.weixin.qq.com/s/0OFRSB3BZcNltHkp_1VG1Q)
 
+<details>
+<summary> </summary>
+
 - obs: 'in_tissue', 'array_row', 'array_col', 'gender', 'age', 'tissue', 'Strain', 'n_genes_by_counts', 'log1p_n_genes_by_counts', 'total_counts', 'log1p_total_counts', 'pct_counts_in_top_50_genes', 'pct_counts_in_top_100_genes', 'pct_counts_in_top_200_genes', 'pct_counts_in_top_500_genes', 'total_counts_mt', 'log1p_total_counts_mt', 'pct_counts_mt', 'n_counts', 'n_genes'
 - var: 'highly_variable', 'means', 'dispersions', 'dispersions_norm'
 - uns: 'spatial', 'log1p', 'hvg', 'pca', 'neighbors', 'umap', 'tsne', 'tissue_colors'
@@ -38,11 +41,14 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 - varm: 'PCs'
 - obsp: 'distances', 'connectivities'
 
+</details>
 
 ## 3.**SpaceRanger outs folder**
 
 [outs输出文件结构](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/SpaceRanger_outs.jpg)
+
 使用 [SpaceRanger](https://www.cnblogs.com/huanping/p/16839765.html)
+
 <details>
 <summary> </summary>
   
