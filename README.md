@@ -86,6 +86,68 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 
 
 ## 4.**MAGIC-seq & Decoder-seq Analysis Pipline**
+
+自写的对于MAGIC-seq和Decoder-seq的pipline
+- 第一步，通过**getBarcode_SR_BroCOLI.py**获取barcode连接的信息, 提取出带有可信barcode的序列。
+- 脚本中有对barcode的校正，只针对了错配错误的校正，没有针对插入和删除。通过枚举错误，在集合中哈希查找，速度相对更快。
+```
+# 添加write_discarded参数可以输出那些barcode不准确的reads, 默认不加这个参数。
+barcodeX=/data/database/MAGIC-seq-NG/Spatial-Transcriptomics/bingqi70_X.txt
+barcodeY=/data/database/MAGIC-seq-NG/Spatial-Transcriptomics/bingqi70_Y.txt
+python getBarcode_SR_BroCOLI.py -i R1.fastq.gz -I R2.fastq.gz -x $barcodeX -y $barcodeY -m 2 -o $resultPath --write_discarded
+
+# 加上z之后用法
+barcodeX=/data/database/MAGIC-seq-NG/E17-1/Barcode-M9-150-E17.5/Spatial_barcodeA150.txt
+barcodeY=/data/database/MAGIC-seq-NG/E17-1/Barcode-M9-150-E17.5/Spatial_barcodeB150.txt
+barcodeZ=/data/database/MAGIC-seq-NG/E17-1/Barcode-M9-150-E17.5/Spatial_barcodeC18.txt
+python getBarcode_SR_BroCOLI.py -i R1.fastq.gz -I R2.fastq.gz -x $barcodeX -y $barcodeY -z $barcodeZ -m 3 -o $resultPath --write_discarded
+```
+
+- 第二步, 使用STARsolo比对, 这个步骤跟magic-seq基本相同。
+```shell
+# 1.准备数据;
+# 文件夹和样品;
+sampath=/data/database/MAGIC-seq-NG/20260417_geneadd/gene0417/00.mergeRawFq/RNA20X125Y1/resultYihuan
+sample=RNA20X125Y1_raw
+fastq1=${sampath}/${sample}_R1_trim.fq.gz
+fastq2=${sampath}/${sample}_R2_trim.fq.gz
+# 给定的白名单;
+whitelist=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/whitelist
+ID=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/T9-ids-barcode.txt
+MAP=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/star2710b
+ANN=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/genes/genes.gtf
+
+# 线程;
+t_num=16
+ulimit -n 100000
+mkdir ${sampath}/STARsolo
+
+/data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --genomeDir ${MAP} \
+  --outFileNamePrefix ${sampath}/STARsolo/${sample}_ \
+  --readFilesCommand zcat \
+  --readFilesIn ${fastq2} ${fastq1} \
+  --outSAMattributes NH HI nM AS CR UR CY UY CB UB GX GN sS sQ sM sF \
+  --outSAMtype BAM SortedByCoordinate \
+  --limitBAMsortRAM 121539607552 \
+  --soloType CB_UMI_Simple \
+  --soloCBwhitelist ${whitelist} \
+  --soloCBstart 1 \
+  --soloCBlen 16 \
+  --soloUMIstart 17 \
+  --soloUMIlen 12 \
+  --soloFeatures Gene GeneFull SJ Velocyto \
+  --soloMultiMappers EM \
+  --soloUMIdedup 1MM_All \
+  --soloCellFilter EmptyDrops_CR \
+  --soloCellReadStats Standard \
+  --clipAdapterType CellRanger4 \
+  --outReadsUnmapped Fastx \
+  --runThreadN ${t_num}
+```
+
+
+
+
 BarcodeX+BarcodeY, 两种Barcode
 <details>
 <summary> </summary>
