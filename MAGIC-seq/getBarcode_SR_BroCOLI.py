@@ -80,83 +80,104 @@ def grouper(iterable, n):
 
 
 def process(fq1, fq2, out1, out2, lookup_x, lookup_y,
-            sx, ex, sy, ey, su, eu, min_qual=10, has_qual=True, lookup_z=None, sz=None, ez=None):
+            sx, ex, sy, ey, su, eu, min_qual=10, has_qual=True, lookup_z=None, sz=None, ez=None,
+            write_discarded=False, discard1=None, discard2=None):
     stats = dict(total=0, mismatch_x=0, mismatch_y=0, mismatch_z=0, umi_del=0, kept=0)
     qual_cutoff = min_qual + 33  # 直接比 ASCII，省掉 ord() -33
     has_z = lookup_z is not None
     countTimes = 0
 
-    with smart_open(fq1) as f1, smart_open(fq2) as f2, \
-         open(out1, 'w') as o1, open(out2, 'w') as o2:
-        
-        for rec1, rec2 in zip(grouper(f1, 4), grouper(f2, 4)):
-            countTimes += 1
-            if countTimes % 1000000 == 0:
-                print(f"have processed {countTimes/1000000}M reads...")
-            if rec1[0] is None:
-                break
-            stats['total'] += 1
+    d1 = open(discard1, 'w') if write_discarded else None
+    d2 = open(discard2, 'w') if write_discarded else None
+    def write_bad_reads(rec1, rec2):
+        d1.writelines(rec1)
+        d2.writelines(rec2)
 
-            seq1 = rec1[1].rstrip('\n')
-            qual1 = rec1[3].rstrip('\n')
+    try:
+        with smart_open(fq1) as f1, smart_open(fq2) as f2, \
+            open(out1, 'w') as o1, open(out2, 'w') as o2:
+            
+            for rec1, rec2 in zip(grouper(f1, 4), grouper(f2, 4)):
+                countTimes += 1
+                if countTimes % 1000000 == 0:
+                    print(f"have processed {countTimes/1000000}M reads...")
+                if rec1[0] is None:
+                    break
+                stats['total'] += 1
 
-            # 1) UMI 质量
-            if has_qual:
-                umi_q = qual1[su:eu]
-                if any(ord(c) < qual_cutoff for c in umi_q):
-                    stats['umi_del'] += 1
+                seq1 = rec1[1].rstrip('\n')
+                qual1 = rec1[3].rstrip('\n')
+
+                # 1) UMI 质量
+                if has_qual:
+                    umi_q = qual1[su:eu]
+                    if any(ord(c) < qual_cutoff for c in umi_q):
+                        stats['umi_del'] += 1
+                        if write_discarded:
+                            write_bad_reads(rec1, rec2)
+                        continue
+
+                # 2) X 条码
+                bx = seq1[sx:ex]
+                cx = lookup_x.get(bx)
+                if cx is None:
+                    stats['mismatch_x'] += 1
+                    if write_discarded:
+                        write_bad_reads(rec1, rec2)
                     continue
 
-            # 2) X 条码
-            bx = seq1[sx:ex]
-            cx = lookup_x.get(bx)
-            if cx is None:
-                stats['mismatch_x'] += 1
-                continue
-
-            # 3) Y 条码
-            by = seq1[sy:ey]
-            cy = lookup_y.get(by)
-            if cy is None:
-                stats['mismatch_y'] += 1
-                continue
-
-            # 4) Z 条码（可选）
-            if has_z:
-                bz = seq1[sz:ez]
-                cz = lookup_z.get(bz)
-                if cz is None:
-                    stats['mismatch_z'] += 1
+                # 3) Y 条码
+                by = seq1[sy:ey]
+                cy = lookup_y.get(by)
+                if cy is None:
+                    stats['mismatch_y'] += 1
+                    if write_discarded:
+                        write_bad_reads(rec1, rec2)
                     continue
 
-            # # 5) 统一修正序列
-            # modified = False
-            # if cx != bx:
-            #     seq1 = seq1[:sx] + cx + seq1[ex:]
-            #     modified = True
-            # if cy != by:
-            #     seq1 = seq1[:sy] + cy + seq1[ey:]
-            #     modified = True
-            # if has_z and cz != bz:
-            #     seq1 = seq1[:sz] + cz + seq1[ez:]
-            #     modified = True
-            # if modified:
-            #     rec1 = (rec1[0], seq1 + '\n', rec1[2], rec1[3])
+                # 4) Z 条码（可选）
+                if has_z:
+                    bz = seq1[sz:ez]
+                    cz = lookup_z.get(bz)
+                    if cz is None:
+                        stats['mismatch_z'] += 1
+                        if write_discarded:
+                            write_bad_reads(rec1, rec2)
+                        continue
 
-            # 5) 重构 read1：barcode_x + barcode_y + (barcode_z) + umi
-            umi_seq = seq1[su:eu]
-            if has_z:
-                new_seq1  = cx + cy + cz + umi_seq
-                new_qual1 = qual1[sx:ex] + qual1[sy:ey] + qual1[sz:ez] + qual1[su:eu]
-            else:
-                new_seq1  = cx + cy + umi_seq
-                new_qual1 = qual1[sx:ex] + qual1[sy:ey] + qual1[su:eu]
+                # # 5) 统一修正序列
+                # modified = False
+                # if cx != bx:
+                #     seq1 = seq1[:sx] + cx + seq1[ex:]
+                #     modified = True
+                # if cy != by:
+                #     seq1 = seq1[:sy] + cy + seq1[ey:]
+                #     modified = True
+                # if has_z and cz != bz:
+                #     seq1 = seq1[:sz] + cz + seq1[ez:]
+                #     modified = True
+                # if modified:
+                #     rec1 = (rec1[0], seq1 + '\n', rec1[2], rec1[3])
 
-            rec1 = (rec1[0], new_seq1 + '\n', rec1[2], new_qual1 + '\n')
+                # 5) 重构 read1：barcode_x + barcode_y + (barcode_z) + umi
+                umi_seq = seq1[su:eu]
+                if has_z:
+                    new_seq1  = cx + cy + cz + umi_seq
+                    new_qual1 = qual1[sx:ex] + qual1[sy:ey] + qual1[sz:ez] + qual1[su:eu]
+                else:
+                    new_seq1  = cx + cy + umi_seq
+                    new_qual1 = qual1[sx:ex] + qual1[sy:ey] + qual1[su:eu]
 
-            o1.writelines(rec1)
-            o2.writelines(rec2)
-            stats['kept'] += 1
+                rec1 = (rec1[0], new_seq1 + '\n', rec1[2], new_qual1 + '\n')
+
+                o1.writelines(rec1)
+                o2.writelines(rec2)
+                stats['kept'] += 1
+    finally:
+        if d1 is not None:
+            d1.close()
+        if d2 is not None:
+            d2.close()
     return stats
 
 def strip_fq_ext(path):
@@ -178,12 +199,15 @@ def main():
     parser.add_argument("-z", default="", help="input barcodeZ whitelist")
     parser.add_argument("-m", default=3, help="how many barcodes?")
     parser.add_argument("-o", default="./", help="output folder path")
+    parser.add_argument("--write_discarded", action="store_true",
+                        help="output discarded read pairs to fastq files")
 
     args = parser.parse_args()
 
     fq1, fq2 = args.i, args.I
     mode = int(args.m)
     outputPath = args.o
+    write_discarded = args.write_discarded
 
     if mode == 2:
         wl_x_path, wl_y_path = args.x, args.y
@@ -210,14 +234,19 @@ def main():
     prefix2 = strip_fq_ext(fq2)
     out1 = os.path.join(outputPath, prefix1 + "_trim.fq")
     out2 = os.path.join(outputPath, prefix2 + "_trim.fq")
+    discard1 = os.path.join(outputPath, prefix1 + "_discarded.fq")
+    discard2 = os.path.join(outputPath, prefix2 + "_discarded.fq")
 
     if mode == 2:
         stats = process(fq1, fq2, out1, out2, lookup_x, lookup_y,
-                        sx, ex, sy, ey, su, eu)
+                        sx, ex, sy, ey, su, eu,
+                        write_discarded=write_discarded, discard1=discard1, discard2=discard2)
     elif mode == 3:
         stats = process(fq1, fq2, out1, out2, lookup_x, lookup_y,
                         sx, ex, sy, ey, su, eu,
-                        lookup_z=lookup_z, sz=sz, ez=ez)        
+                        lookup_z=lookup_z, sz=sz, ez=ez,
+                        write_discarded=write_discarded, discard1=discard1, discard2=discard2)  
+      
     run_min = (time.time() - t0) / 60
 
     print(f"before trim: {stats['total']}")
