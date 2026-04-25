@@ -67,7 +67,8 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 
 ## 4.**MAGIC-seq & Decoder-seq Analysis Pipline**
 
-自写的对于MAGIC-seq和Decoder-seq的pipline
+### 4.1 自写的对于MAGIC-seq和Decoder-seq的pipline
+
 - 第一步，通过**getBarcode_SR_BroCOLI.py**获取barcode连接的信息, 提取出带有可信barcode的序列。
 - 脚本中有对barcode的校正，只针对了错配错误的校正，没有针对插入和删除。通过枚举错误，在集合中哈希查找，速度相对更快。
 ```
@@ -130,8 +131,7 @@ mkdir ${sampath}/STARsolo
 python 1_blast_species.py -q RNA20X125Y1_raw_R2.fastq.gz -d /data/workdir/zhangj/database/nt_/core/core_nt
 ```
 
-
-
+### 4.2 MAGIC-seq的pipline
 
 BarcodeX+BarcodeY, 两种Barcode
 <details>
@@ -290,6 +290,7 @@ mkdir ${st_path}/out
 
 </details>
 
+### 4.3 之前自写的对MAGIC-seq数据排查的脚本
 
 MAGIC-seq数据中对建库问题的排查
 <details>
@@ -326,21 +327,20 @@ blastn -query ${fa} -db /data/workdir/zhangj/database/nt_/core/core_nt \
 ```
 使用python脚本解析blastn_results.tsv中包含的物种信息;
 
-
 4.检查read1中barcode的自连情况, 顺便也可以看看barcode的连接情况;
 ```python
 python barcodeXXX.py --fq STx170y170z7micebrain_R1.fastq.gz --bcx /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeA150.txt --bcy /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeB150.txt --bcz /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeC18.txt -m 3
 ```
 
-
-
 </details>
 
+### 4.4 decoder-seq的脚本
+[Decoder-seq分析流程](https://github.com/songjiajia2018/Decoder-seq/tree/main)
+
+测试过这个分析流程，能根据编辑距离很好的校正barcode，缺点是相对较慢，与我自己写的脚本的区别在于它能校正1bp的插入和删除的barcode错误，我放弃了这部分，只保留了1bp的错配的barcode。而MAGIC-seq更粗暴，只是按位置提取出来，只保留了正确的barcode。
 
 
-
-
-参考
+## 参考
 
 [空转的分析模式](https://mp.weixin.qq.com/s/lnP752JylTJouBwkUuGT-Q)
 
