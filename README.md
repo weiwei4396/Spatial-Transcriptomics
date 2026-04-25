@@ -30,11 +30,7 @@ Learning some analysis code.
 
 
 ## 1.**SpaceRanger**
-<details>
-<summary> </summary>
-
-
-</details>
+[官方网址](https://www.10xgenomics.com/support/software/space-ranger/latest)
 
 
 
@@ -42,7 +38,7 @@ Learning some analysis code.
 <details>
 <summary> </summary>
 
-![AnnData](https://raw.githubusercontent.com/weiwei4396/Spatial-Transcriptomics/main/picture/anndata.jpg)
+[AnnData结构](https://raw.githubusercontent.com/weiwei4396/Spatial-Transcriptomics/main/picture/anndata.jpg)
 scverse 是一个专注于生命科学基础工具的组织和生态系统，最初聚焦于单细胞数据分析。它的优势在于出色的扩展性、灵活性以及与现有Python数据科学和机器学习工具的强大互操作性。
 
 在scverse生态系统中, AnnData是用来将数据矩阵与这些注释关联起来的核心工具。为了提高效率, AnnData支持稀疏矩阵 (sparse matrices) 和部分读取(partial reading), 这样可以更快地处理大规模数据。AnnData在功能上与R生态系统中的数据结构 (比如Bioconductor的SummarizedExperiment或Seurat对象)相似, 但R包通常使用转置后的特征矩阵 (基因 x 细胞)。
@@ -68,7 +64,7 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 <details>
 <summary> </summary>
 
-![outs](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/SpaceRanger_outs.jpg)
+[outs输出文件结构](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/SpaceRanger_outs.jpg)
 
 使用 [SpaceRanger](https://www.cnblogs.com/huanping/p/16839765.html)
 
@@ -105,8 +101,7 @@ python getBarcode_SR_BroCOLI.py -i R1.fastq.gz -I R2.fastq.gz -x $barcodeX -y $b
 
 - 第二步, 使用STARsolo比对, 这个步骤跟magic-seq基本相同。
 ```shell
-# 1.准备数据;
-# 文件夹和样品;
+# 1.准备数据和文件;
 sampath=/data/database/MAGIC-seq-NG/20260417_geneadd/gene0417/00.mergeRawFq/RNA20X125Y1/resultYihuan
 sample=RNA20X125Y1_raw
 fastq1=${sampath}/${sample}_R1_trim.fq.gz
@@ -116,12 +111,11 @@ whitelist=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/whitelis
 ID=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/T9-ids-barcode.txt
 MAP=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/star2710b
 ANN=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/genes/genes.gtf
-
 # 线程;
 t_num=16
 ulimit -n 100000
 mkdir ${sampath}/STARsolo
-
+# 2.比对
 /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --genomeDir ${MAP} \
   --outFileNamePrefix ${sampath}/STARsolo/${sample}_ \
   --readFilesCommand zcat \
@@ -143,6 +137,13 @@ mkdir ${sampath}/STARsolo
   --clipAdapterType CellRanger4 \
   --outReadsUnmapped Fastx \
   --runThreadN ${t_num}
+```
+- 额外步骤, 提取前5000条序列blastn查看是否有污染
+```python
+# 脚本/data/database/MAGIC-seq-NG/Spatial-Transcriptomics/MAGIC-seq/1_blast_species.py
+# 给定read2.fastq.gz可以自动提取前5000条序列, 也可以直接给定fasta或者fastq
+# 最后需要给定nt库
+python 1_blast_species.py -q RNA20X125Y1_raw_R2.fastq.gz -d /data/workdir/zhangj/database/nt_/core/core_nt
 ```
 
 
