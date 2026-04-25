@@ -19,8 +19,6 @@ Learning some analysis code.
 
 
 ## 2.**AnnData data structure**
-<details>
-<summary> </summary>
 
 [AnnData结构](https://raw.githubusercontent.com/weiwei4396/Spatial-Transcriptomics/main/picture/anndata.jpg)
 scverse 是一个专注于生命科学基础工具的组织和生态系统，最初聚焦于单细胞数据分析。它的优势在于出色的扩展性、灵活性以及与现有Python数据科学和机器学习工具的强大互操作性。
@@ -41,17 +39,13 @@ AnnData还可以储存很多额外信息. 比如, 其他关于观测值和变量
 - obsp: 'distances', 'connectivities'
 
 
-</details>
-
-
 ## 3.**SpaceRanger outs folder**
-<details>
-<summary> </summary>
 
 [outs输出文件结构](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/SpaceRanger_outs.jpg)
-
 使用 [SpaceRanger](https://www.cnblogs.com/huanping/p/16839765.html)
-
+<details>
+<summary> </summary>
+  
 - filtered_feature_bc_matrix [folder] 跟单细胞一样的三个.gz文件，矩阵、基因名称和barcode名称。
 - filtered_feature_bc_matrix.h5 本质上跟上面的文件夹存储的信息是一致的，都是空间转录组表达矩阵的信息。还包含了一些metadata信息，包括SpaceRanger版本信息，测序实验试剂信息等，直接读取这个h5文件包含的信息更多。
 - spatial [folder] 这个文件夹中包含了几个文件，主要包含空转切片的图片信息。
