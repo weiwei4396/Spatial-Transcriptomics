@@ -84,6 +84,10 @@ barcodeZ=/data/database/MAGIC-seq-NG/E17-1/Barcode-M9-150-E17.5/Spatial_barcodeC
 python getBarcode_SR_BroCOLI.py -i R1.fastq.gz -I R2.fastq.gz -x $barcodeX -y $barcodeY -z $barcodeZ -m 3 -o $resultPath --write_discarded
 ```
 
+pigz -p 16 -c DCseqformalMB_S1_L001_R1_001_trim.fastq > DCseqformalMB_S1_L001_R1_001_trim.fastq.gz
+pigz -p 16 -c DCseqformalMB_S1_L001_R2_001_trim.fastq > DCseqformalMB_S1_L001_R2_001_trim.fastq.gz
+
+
 - 第二步, 使用STARsolo比对, 这个步骤跟magic-seq基本相同。
 ```shell
 # 1.准备数据和文件;
