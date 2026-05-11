@@ -1,8 +1,4 @@
-# Spatial-Transcriptomics
-Learning some analysis code.
-
 ## 0.**Introduction**
-### Sequencing-based spatial transcriptomics
 ### Imaging-based spatial transcriptomics
 
 基于成像的平台（也称为基于单分子检测的平台）通过原位杂交（ISH）或原位测序（ISS）技术，对预设的靶向基因面板（通常包含数百至数千个基因）进行逐轮检测，从而在组织中原位识别单个RNA分子的空间位置。由于每个转录本都被单独识别，原始数据天然具有亚细胞级别的空间分辨率。
@@ -10,8 +6,6 @@ Learning some analysis code.
 在预处理阶段，需通过图像分割来识别单个细胞或细胞核的边界，并将检测到的 RNA分子分配给相应的细胞或细胞核。然而，细胞分割极具挑战性，尤其在组织切片中：由于细胞在三维空间中存在重叠，在二维切片的某一 (x, y) 位置可能包含多个细胞的信号，导致边界难以准确界定。
 
 完成分割后，可将RNA分子按细胞汇总为细胞级别的基因表达计数，也可直接在单分子水平开展分析。若采用细胞级别数据，许多分析方法可复用自基于“spot”的空间转录组学或单细胞 RNA 测序领域已有的工具。
-
-
 
 ## 1.**SpaceRanger**
 [官方网址](https://www.10xgenomics.com/support/software/space-ranger/latest)
@@ -135,213 +129,8 @@ mkdir ${sampath}/STARsolo
 python 1_blast_species.py -q RNA20X125Y1_raw_R2.fastq.gz -d /data/workdir/zhangj/database/nt_/core/core_nt
 ```
 
-### 4.2 MAGIC-seq的pipline
-
-BarcodeX+BarcodeY, 两种Barcode
-<details>
-<summary> </summary>
-
-- 数据预处理, 提取Read1的barcode和UMI, 得到只由Barcode和UMI组成序列; 根据实验设计是否有barcodeZ, 提取不同的索引; 三宫格或九宫格: BarcodeX[1-8], BarcodeY+UMI[27-46];
-- 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72];
-- STARsolo所需的read1格式为barcode+UMI; 因此设置为**BarcodeX/BarcodeY/UMI**或**BarcodeX/BarcodeY/BarcodeZ/UMI**;
-
-1.数据准备
-```shell
-# 设置输入文件; sampath为当前测序的R1.fastq.gz和R2.fastq.gz所在的文件夹;
-sampath=/data/database/MAGIC-seq-NG/Olfb
-sample=OlfBulb
-fastq1=${sampath}/${sample}_R1.fastq.gz
-fastq2=${sampath}/${sample}_R2.fastq.gz
-
-# whitelist为所有的barcode的组合, 如X和Y共4900种barcode, 每个barcode占一行;
-whitelist=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/whitelist
-ID=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/T9-ids-barcode.txt
-
-# 参考基因组, 小鼠/人;
-# 创建STAR的参考基因组index;
-# /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --runThreadN 16 --runMode genomeGenerate --genomeDir star2710b --genomeFastaFiles /data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/fasta/genome.fa --sjdbGTFfile /data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/genes/genes.gtf --sjdbOverhang 100 --genomeSAindexNbases 14 --genomeChrBinNbits 18 --genomeSAsparseD 3
-# MAP=/data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/star2710b
-# ANN=/data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/genes/genes.gtf
-MAP=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/star2710b
-ANN=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/genes/genes.gtf
-
-# 线程;
-t_num=16
-
-# 建立输出的文件和文件夹;
-log_file=${sampath}/${sample}_st_log.txt
-st_path=${sampath}/${sample}
-touch log_file
-mkdir ${st_path}
-mkdir ${st_path}/split
-mkdir ${st_path}/out
-```
-
-2.提取barcode和umi
-```shell
-# 注意: seqkit需要版本 2.0.0, 至少已知 2.10.0 中 concat功能不能支持现在的分析;
-# 2.seqkit分割文件处理; 默认分成10份; 然后分别提取 BarcodeX和BarcodeY-UMI;
-
-FileNum=10
-seqkit split2 -1 ${sampath}/${sample}_R1.fastq.gz -2 ${sampath}/${sample}_R2.fastq.gz -p $FileNum -O ${st_path}/split -f
-
-files=(001 002 003 004 005 006 007 008 009 010)
-
-for file in "${files[@]}"
-do
-    seqkit subseq -r 1:8 ${st_path}/split/${sample}_R1.part_${file}.fastq.gz -o ${st_path}/out/part_${file}_test1-8.fastq.gz
-    seqkit subseq -r 27:46 ${st_path}/split/${sample}_R1.part_${file}.fastq.gz -o ${st_path}/out/part_${file}_test27-46.fastq.gz
-    seqkit concat ${st_path}/out/part_${file}_test1-8.fastq.gz ${st_path}/out/part_${file}_test27-46.fastq.gz -o ${st_path}/out/${sample}_${file}_reformat_R1.fastq.gz
-    seqkit replace -p " (.*)$" -r "" ${st_path}/split/${sample}_R2.part_${file}.fastq.gz -o ${st_path}/out/${sample}_${file}_reformat_R2.fastq.gz
-    rm -rf ${st_path}/out/part_${file}_test1-8.fastq.gz
-    rm -rf ${st_path}/out/part_${file}_test27-46.fastq.gz
-done
 
 
-cat ${st_path}/out/*_reformat_R1.fastq.gz > ${st_path}/out/${sample}_reformat_R1.fastq.gz
-rm -rf ${st_path}/out/${sample}_0*_reformat_R1.fastq.gz
-cat ${st_path}/out/*_reformat_R2.fastq.gz > ${st_path}/out/${sample}_reformat_R2.fastq.gz
-rm -rf ${st_path}/out/${sample}_0*_reformat_R2.fastq.gz
-rm -rf ${st_path}/split
-```
-
-3.质控
-```shell
-# TA建库需要运行这一步去接头;
-# AAGCAGTGGTATCAACGCAGAGTGAATGGG
-cutadapt -g AAGCAGTGGTATCAACGCAGAGTGAATGGG -e 0.01 -j ${t_num} -o ${st_path}/${sample}_reformat_cutadapt_R2.fastq.gz ${st_path}/out/${sample}_reformat_R2.fastq.gz
-
-fastp -i ${st_path}/out/${sample}_reformat_R1.fastq.gz -I ${st_path}/${sample}_reformat_cutadapt_R2.fastq.gz \
-       -o ${st_path}/${sample}_cleaned_R1.fastq.gz -O ${st_path}/${sample}_cleaned_R2.fastq.gz \
-       -l 28 -x -g -w ${t_num} --detect_adapter_for_pe -j ${st_path}/${sample}.barcode.fastp.json -h ${st_path}/${sample}.barcode.fastp.html
-```
-
-
-4.比对; 将数据比对到参考基因组, 需要注意的是提供的reads先输入reads2再输入reads1;
-```shell
-# 使用STARsolo将数据比对;
-/data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --genomeDir ${MAP} \
-  --outFileNamePrefix ${st_path}/STARsolo/${sample}_ \
-  --readFilesCommand zcat \
-  --readFilesIn ${st_path}/${sample}_cleaned_R2.fastq.gz ${st_path}/${sample}_cleaned_R1.fastq.gz \
-  --outSAMattributes NH HI nM AS CR UR CY UY CB UB GX GN sS sQ sM sF \
-  --outSAMtype BAM SortedByCoordinate \
-  --limitBAMsortRAM 121539607552 \
-  --soloType CB_UMI_Simple \
-  --soloCBwhitelist ${whitelist} \
-  --soloCBstart 1 \
-  --soloCBlen 16 \
-  --soloUMIstart 17 \
-  --soloUMIlen 12 \
-  --soloFeatures Gene GeneFull SJ Velocyto \
-  --soloMultiMappers EM \
-  --soloUMIdedup 1MM_All \
-  --soloCellFilter EmptyDrops_CR \
-  --soloCellReadStats Standard \
-  --clipAdapterType CellRanger4 \
-  --outReadsUnmapped Fastx \
-  --runThreadN ${t_num}
-```
-
-
-5.将STARsolo生成的基因表达转化为Anndata;
-
-
-
-
-</details>
-
-
-BarcodeX+BarcodeY+BarcodeZ, 三种Barcode
-<details>
-<summary> </summary>
-
-- 数据预处理, 提取Read1的barcode和UMI, 得到只由Barcode和UMI组成序列; 根据实验设计是否有barcodeZ, 提取不同的索引; 三宫格或九宫格: BarcodeX[1-8], BarcodeY+UMI[27-46];
-- 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72];
-- STARsolo所需的read1格式为barcode+UMI; 因此设置为**BarcodeX/BarcodeY/UMI**或**BarcodeX/BarcodeY/BarcodeZ/UMI**;
-
-1.数据准备
-```shell
-# 设置输入文件; sampath为当前测序的R1.fastq.gz和R2.fastq.gz所在的文件夹;
-sampath=/data/database/MAGIC-seq-NG/20260121_second/20260121_second/00.mergeRawFq/STx170y170z7micebrain
-sample=STx170y170z7micebrain
-fastq1=${sampath}/${sample}_R1.fastq.gz
-fastq2=${sampath}/${sample}_R2.fastq.gz
-
-# whitelist为所有的barcode的组合, 如X和Y共4900种barcode, 每个barcode占一行;
-whitelist=/data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/whitelist.txt
-ID=/data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/M9_ST_ids_barcode_chip1_C18.txt
-
-# 参考基因组, 小鼠/人;
-# 创建STAR的参考基因组index;
-# /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --runThreadN 16 --runMode genomeGenerate --genomeDir star2710b --genomeFastaFiles /data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/fasta/genome.fa --sjdbGTFfile /data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/genes/genes.gtf --sjdbOverhang 100 --genomeSAindexNbases 14 --genomeChrBinNbits 18 --genomeSAsparseD 3
-# MAP=/data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/star2710b
-# ANN=/data/workdir/panw/reference/human/refdata-gex-GRCh38-2024-A/genes/genes.gtf
-MAP=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/star2710b
-ANN=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/genes/genes.gtf
-
-# 线程;
-t_num=16
-
-# 建立输出的文件和文件夹;
-log_file=${sampath}/${sample}_st_log.txt
-st_path=${sampath}/${sample}
-touch log_file
-mkdir ${st_path}
-mkdir ${st_path}/split
-mkdir ${st_path}/out
-```
-
-</details>
-
-### 4.3 之前自写的对MAGIC-seq数据排查的脚本
-
-MAGIC-seq数据中对建库问题的排查
-<details>
-<summary> </summary>
-
-
-```shell
-conda activate py310
-```
-
-0.通过每个位置碱基含量百分比, 初步判断read1和read2的结果;
-```shell
-fastp -i in.R1.fq.gz -I in.R2.fq.gz -o out.R1.fq.gz -O out.R2.fq.gz
-```
-
-1.按照确定位置找barcode, 查看正确的barcode比例; 通过改变-m参数可以查看m个barcode是否正确;
-
-```python
-python 0_stat_bcX.py --seq /data/database/MAGIC-seq-NG/20260121_second/20260121_second/00.mergeRawFq/STx170y170z7micebrain/Yes_haveT/T10/out/T10_reformat_R1.fastq.gz --bcx /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeA150.txt --bcy /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeB150.txt --bcz /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeC18.txt -m 1
-```
-
-2.查看read2中TSO含量的比例;
-```python
-python 2_TSO_ratio.py --tso AAGCAGTGGTATCAACGCAG --fq STx170y170z7micebrain_R2.fastq.gz
-```
-
-3.抽取部分reads使用blastn比对查看一些物种信息;
-```shell
-fa=/data/database/MAGIC-seq-NG/20260121_second/20260121_second/00.mergeRawFq/STx170y170z7micebrain/STAll_R2.fasta
-blastn -query ${fa} -db /data/workdir/zhangj/database/nt_/core/core_nt \
-        -out ./blastn_results.tsv -max_target_seqs 5 -task blastn \
-        -outfmt "6 std qlen slen btop ssciname staxid stitle" \
-        -num_threads 30
-```
-使用python脚本解析blastn_results.tsv中包含的物种信息;
-
-4.检查read1中barcode的自连情况, 顺便也可以看看barcode的连接情况;
-```python
-python barcodeXXX.py --fq STx170y170z7micebrain_R1.fastq.gz --bcx /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeA150.txt --bcy /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeB150.txt --bcz /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeC18.txt -m 3
-```
-
-</details>
-
-### 4.4 decoder-seq的脚本
-[Decoder-seq分析流程](https://github.com/songjiajia2018/Decoder-seq/tree/main)
-
-测试过这个分析流程，能根据编辑距离很好的校正barcode，缺点是相对较慢，与我自己写的脚本的区别在于它能校正1bp的插入和删除的barcode错误，我放弃了这部分，只保留了1bp的错配的barcode。而MAGIC-seq更粗暴，只是按位置提取出来，只保留了正确的barcode。
 
 
 ## 参考
@@ -365,14 +154,6 @@ python barcodeXXX.py --fq STx170y170z7micebrain_R1.fastq.gz --bcx /data/database
 - 像素坐标: 每个像素有自己的位置, 左上角永远是 (0, 0), 向右为x+, 向下为y+;
 
 
-### 3. Gene+ 数据
-```shell
-wget -c --no-check-certificate "http://geneplus001.oss-cn-beijing.aliyuncs.com/kefu%2F20260105_ZhongGuoKeXueYuanBeiJingJiYinZuYanJiuSuoGuoJiaShengWuXinXiZhongXin-wubingqi-1_1.tar?Expires=1769112506&OSSAccessKeyId=LTAI4FyeijYaddJVHKYZ2yg7&Signature=6KgeXSOn1sQAFN0nCcII8v8k2D4%3D" -O first_data.tar
-tar -xvf first_data.tar
-mv 20260105_ZhongGuoKeXueYuanBeiJingJiYinZuYanJiuSuoGuoJiaShengWuXinXiZhongXin-wubingqi-1_1 20260105_first
-cd 20260105_first
-md5sum -c MD5.txt
-```
 
 </details>
 
