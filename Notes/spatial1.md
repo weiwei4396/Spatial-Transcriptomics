@@ -162,4 +162,3 @@ python 1_blast_species.py -q RNA20X125Y1_raw_R2.fastq.gz -d /data/workdir/zhangj
 
 
 
-
