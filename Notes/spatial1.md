@@ -138,11 +138,8 @@ python 1_blast_species.py -q RNA20X125Y1_raw_R2.fastq.gz -d /data/workdir/zhangj
 [空转的分析模式](https://mp.weixin.qq.com/s/lnP752JylTJouBwkUuGT-Q)
 
 
-## **Question & Answer**
-<details>
-<summary> </summary>
 
-### 1. Segment Anything Model (SAM)
+
 
 
 
@@ -152,16 +149,6 @@ python 1_blast_species.py -q RNA20X125Y1_raw_R2.fastq.gz -d /data/workdir/zhangj
 - H&E图是经过扫描仪拍摄得到的, 随着组织样本放置, 扫描角度、形变, 不同批次 H&E 图像中的网格, 不一定是正交的、等距的;
 - 在H&E图和对应的spatial spot图上的同一个位置选取参考点, 两个对应点通常用于仿射变换, 线性缩放, 旋转, 平移;
 - 像素坐标: 每个像素有自己的位置, 左上角永远是 (0, 0), 向右为x+, 向下为y+;
-
-
-
-</details>
-
-
-
-
-
-
 
 
 
