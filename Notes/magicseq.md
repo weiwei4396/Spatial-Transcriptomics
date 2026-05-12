@@ -30,8 +30,8 @@ python $getPY \
         --bcx $barcodeX --bcy $barcodeY --bcz $barcodeZ \
         -m 3 -o $resultLinker
 cd result
-pigz -p 16 /data/database/MAGIC-seq-NG/E17-1/result/CRR1158992_R1_trim.fastq
-pigz -p 16 /data/database/MAGIC-seq-NG/E17-1/result/CRR1158992_R2_trim.fastq
+pigz -p 16 CRR1158992_R1_trim.fastq
+pigz -p 16 CRR1158992_R2_trim.fastq
 ```
 其次第二步，使用[STARsolo](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/annData.md) 将过滤后的reads比对到参考基因组。
 ```shell
