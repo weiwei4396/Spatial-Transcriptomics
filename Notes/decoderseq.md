@@ -1,7 +1,6 @@
 ## Content
 - [decoder-seq脚本解析](#decoder-seq脚本解析)
-
-
+- [饱和度曲线](#饱和度曲线)
 
 
 ## decoder-seq脚本解析
@@ -88,6 +87,28 @@ python script3_decoderseq_downstream.py
 # corner_X75Y1 = (16144, 496)  # top-right
 # corner_X1Y75 = (528, 16128)  # bottom-left
 ```
+
+## 饱和度曲线
+必须准备的文件：
+- STARsolo比对后输出的bam文件。
+
+主要的流程：
+设置比例为0.1到1的顺序序列，遍历bam文件，每次记录reads的信息，比如CB-UB-GX(barcode-umi-gene)，并给每一条reads一个0到1之间的随机数，这个随机数满足前面设置的区间条件，就会归类到对应的区间中(>=threshold)。遍历结束后，统计结果并画图。
+
+```shell
+python script4_saturation_STARsolo.py --bam DCseqformalMB_S1_L001_Aligned.sortedByCoord.out.bam \
+         --out_tsv output.tsv --out_png outputPict.png
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
