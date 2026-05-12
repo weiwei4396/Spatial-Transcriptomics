@@ -65,7 +65,7 @@ mkdir ${sampath}/STARsolo
 ```shell
 python script3_decoderseq_downstream.py
 ```
-需要改动的参数如下
+需要改动的参数如下，STARsolo的结果必须将filtered中的matrix.mtx改为matrix.mtx.gz
 ```shell
 # SAMPLE = 'sample1'
 # STARSOLO_DIR = '/data/workdir/panw/py_singlecell/Spatial/MAGIC-seq/bingqi_Decoderseq/DCseqformalMB_S1_L001_Solo.out'
