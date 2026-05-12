@@ -2,7 +2,7 @@
 - [MAGIC-seq脚本解析](#MAGIC-seq脚本解析)
 
 ## **MAGIC-seq脚本解析**
-
+### 我自己写的步骤
 必须准备的文件：两个/三个barcode白名单文件
 - [Spatial_barcodeA150.txt](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/magicseq_whitelist.png)：沿用的MAGIC-seq文章数据给定的白名单结构，第一列表示芯片上的位置，第二列表示这个barcode的序列。
 - Spatial_barcodeB150.txt：跟barcode x情况类似，且数量相同。
@@ -80,11 +80,11 @@ mkdir ${sampath}/STARsolo
 python 1_blast_species.py -q RNA20X125Y1_raw_R2.fastq.gz -d /data/workdir/zhangj/database/nt_/core/core_nt
 ```
 
-### 4.2 MAGIC-seq的pipline
+### MAGIC-seq文章的pipline
 
-BarcodeX+BarcodeY, 两种Barcode
+BarcodeX + BarcodeY
 <details>
-<summary> </summary>
+<summary> X+Y barcode流程 </summary>
 
 - 数据预处理, 提取Read1的barcode和UMI, 得到只由Barcode和UMI组成序列; 根据实验设计是否有barcodeZ, 提取不同的索引; 三宫格或九宫格: BarcodeX[1-8], BarcodeY+UMI[27-46];
 - 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72];
@@ -188,18 +188,14 @@ fastp -i ${st_path}/out/${sample}_reformat_R1.fastq.gz -I ${st_path}/${sample}_r
   --runThreadN ${t_num}
 ```
 
-
 5.将STARsolo生成的基因表达转化为Anndata;
-
-
-
 
 </details>
 
 
-BarcodeX+BarcodeY+BarcodeZ, 三种Barcode
+BarcodeX + BarcodeY + BarcodeZ
 <details>
-<summary> </summary>
+<summary> X+Y+Z barcode流程 </summary>
 
 - 数据预处理, 提取Read1的barcode和UMI, 得到只由Barcode和UMI组成序列; 根据实验设计是否有barcodeZ, 提取不同的索引; 三宫格或九宫格: BarcodeX[1-8], BarcodeY+UMI[27-46];
 - 整个切片: BarcodeX[1-8], BarcodeY[27-34], BarcodeZ+UMI[53:72];
@@ -239,12 +235,10 @@ mkdir ${st_path}/out
 
 </details>
 
-### 4.3 之前自写的对MAGIC-seq数据排查的脚本
+### 之前自写的对MAGIC-seq数据排查的脚本
 
-MAGIC-seq数据中对建库问题的排查
 <details>
-<summary> </summary>
-
+<summary> MAGIC-seq数据中对建库问题的排查 </summary>
 
 ```shell
 conda activate py310
