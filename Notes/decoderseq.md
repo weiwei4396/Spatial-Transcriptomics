@@ -10,9 +10,9 @@
 - 全分辨率的H&E染色图。
 
 分析流程主要包括三步：
-- 1.根据barcode清单提取原始测序数据中有效的barcode。
+- 1.根据barcode清单提取原始测序数据中有效的barcode。[script1_getBarcodeSR_decoderseq.py](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Decoder-seq/script1_getBarcodeSR_decoderseq.py)
 - 2.将有效barcode的reads比对到参考基因组。
-- 3.手动提供三个坐标推算每个芯片坐标的像素坐标，所有信息组织成AnnData，下游分析。
+- 3.手动提供三个坐标推算每个芯片坐标的像素坐标，所有信息组织成AnnData，下游分析。[script3_decoderseq_downstream.py](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Decoder-seq/script3_decoderseq_downstream.py)
 
 首先第1步，校正1bp错误的barcode，我的脚本只保留了1bp的错配的barcode。思路是将所有的barcode序列中的8个位置分别替换成"AGCTN"，构建真实barcode与所有候选barcode的哈希表，首先判定是否是正确的barcode，然后判定是否是候选1bp错误内的barcode。不满足条件的reads直接丢弃。最后使用pigz压缩为gz文件。
 ```shell
@@ -90,7 +90,7 @@ python script3_decoderseq_downstream.py
 
 ## 饱和度曲线
 必须准备的文件：
-- STARsolo比对后输出的bam文件。
+- STARsolo比对后输出的bam文件。[script4_saturation_STARsolo.py](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Decoder-seq/script4_saturation_STARsolo.py)
 
 主要的流程：
 设置比例为0.1到1的顺序序列，遍历bam文件，每次记录reads的信息，比如CB-UB-GX(barcode-umi-gene)，并给每一条reads一个0到1之间的随机数，这个随机数满足前面设置的区间条件，就会归类到对应的区间中(>=threshold)。遍历结束后，统计结果并画图。
