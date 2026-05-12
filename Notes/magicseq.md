@@ -3,8 +3,10 @@
 
 ## **MAGIC-seq脚本解析**
 
-必须准备的文件：
-- barcode_coordinate.txt: 记录了barcode的顺序，比如从X1到X75和从Y1到Y75，以及对应的序列。必须包含三列，且列名称为"barcode"、"x"、"y"。"barcode"列表示所有X和Y的组合序列(16bp)，"x"列表示x轴上排序的位置，示例芯片总共75个barcode x，因此芯片x坐标从1到75。 "y"表示y轴上排序的位置，芯片y坐标从1到75。
+必须准备的文件：两个/三个barcode白名单文件
+- [Spatial_barcodeA150.txt]()：沿用的MAGIC-seq文章数据给定的白名单结构，第一列表示芯片上的位置，第二列表示这个barcode的序列。
+- Spatial_barcodeB150.txt：跟barcode x情况类似，且数量相同。
+- Spatial_barcodeC18.txt(看是否有Z轴)：情况也相似，只不过数量很少。
 - 全分辨率的H&E染色图。
 
 分析流程主要包括三步：
