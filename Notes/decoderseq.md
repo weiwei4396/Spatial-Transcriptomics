@@ -4,7 +4,7 @@
 
 
 
-## decoder-seq脚本
+### decoder-seq脚本
 
 必须准备的文件：
 - barcode_coordinate.txt: 记录了barcode的顺序，比如从X1到X75和从Y1到Y75，以及对应的序列。必须包含三列，且列名称为"barcode"、"x"、"y"。"barcode"列表示所有X和Y的组合序列(16bp)，"x"列表示x轴上排序的位置，示例芯片总共75个barcode x，因此芯片x坐标从1到75。 "y"表示y轴上排序的位置，芯片y坐标从1到75。
