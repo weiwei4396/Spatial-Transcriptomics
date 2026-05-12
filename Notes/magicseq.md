@@ -1,11 +1,21 @@
-## 4.**MAGIC-seq & Decoder-seq Analysis Pipline**
+## Content
+- [MAGIC-seq脚本解析](#MAGIC-seq脚本解析)
 
-### 4.1 自写的对于MAGIC-seq和Decoder-seq的pipline
+## **MAGIC-seq脚本解析**
 
-- 第一步，通过**getBarcode_SR_BroCOLI.py**获取barcode连接的信息, 提取出带有可信barcode的序列。
-- 脚本中有对barcode的校正，只针对了错配错误的校正，没有针对插入和删除。通过枚举错误，在集合中哈希查找，速度相对更快。
-```
-# 添加write_discarded参数可以输出那些barcode不准确的reads, 默认不加这个参数。
+必须准备的文件：
+- barcode_coordinate.txt: 记录了barcode的顺序，比如从X1到X75和从Y1到Y75，以及对应的序列。必须包含三列，且列名称为"barcode"、"x"、"y"。"barcode"列表示所有X和Y的组合序列(16bp)，"x"列表示x轴上排序的位置，示例芯片总共75个barcode x，因此芯片x坐标从1到75。 "y"表示y轴上排序的位置，芯片y坐标从1到75。
+- 全分辨率的H&E染色图。
+
+分析流程主要包括三步：
+- 1.根据barcode清单提取原始测序数据中有效的barcode。
+- 2.将有效barcode的reads比对到参考基因组。
+- 3.手动提供三个坐标推算每个芯片坐标的像素坐标，所有信息组织成AnnData，下游分析。
+
+首先第1步，校正1bp错误的barcode，我的脚本只保留了1bp的错配的barcode。思路是将所有的barcode序列中的8个位置分别替换成"AGCTN"，构建真实barcode与所有候选barcode的哈希表，首先判定是否是正确的barcode，然后判定是否是候选1bp错误内的barcode。不满足条件的reads直接丢弃。最后使用pigz压缩为gz文件。
+
+```shell
+# 添加write_discarded参数可以输出那些barcode不准确的reads, 默认不加这个参数
 barcodeX=/data/database/MAGIC-seq-NG/Spatial-Transcriptomics/bingqi70_X.txt
 barcodeY=/data/database/MAGIC-seq-NG/Spatial-Transcriptomics/bingqi70_Y.txt
 python getBarcode_SR_BroCOLI.py -i R1.fastq.gz -I R2.fastq.gz -x $barcodeX -y $barcodeY -m 2 -o $resultPath --write_discarded
@@ -19,9 +29,8 @@ python getBarcode_SR_BroCOLI.py -i R1.fastq.gz -I R2.fastq.gz -x $barcodeX -y $b
 
 pigz -p 16 -c DCseqformalMB_S1_L001_R1_001_trim.fastq > DCseqformalMB_S1_L001_R1_001_trim.fastq.gz
 pigz -p 16 -c DCseqformalMB_S1_L001_R2_001_trim.fastq > DCseqformalMB_S1_L001_R2_001_trim.fastq.gz
-
-
-- 第二步, 使用STARsolo比对, 这个步骤跟magic-seq基本相同。
+```
+其次第二步，使用[STARsolo](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/annData.md) 将过滤后的reads比对到参考基因组。
 ```shell
 # 1.准备数据和文件;
 sampath=/data/database/MAGIC-seq-NG/20260417_geneadd/gene0417/00.mergeRawFq/RNA20X125Y1/resultYihuan
