@@ -33,15 +33,15 @@
 
 
 
-### Gene+
+### 吉因加
 <details>
-<summary> </summary>
+<summary> 下载数据 </summary>
 
 ```shell
-wget -c --no-check-certificate "http://geneplus001.oss-cn-beijing.aliyuncs.com/kefu%2F20260105_ZhongGuoKeXueYuanBeiJingJiYinZuYanJiuSuoGuoJiaShengWuXinXiZhongXin-wubingqi-1_1.tar?Expires=1769112506&OSSAccessKeyId=LTAI4FyeijYaddJVHKYZ2yg7&Signature=6KgeXSOn1sQAFN0nCcII8v8k2D4%3D" -O first_data.tar
+wget -c --no-check-certificate "URL" -O first_data.tar
 tar -xvf first_data.tar
-mv 20260105_ZhongGuoKeXueYuanBeiJingJiYinZuYanJiuSuoGuoJiaShengWuXinXiZhongXin-wubingqi-1_1 20260105_first
-cd 20260105_first
+mv TheirFiles first_data
+cd first_data
 md5sum -c MD5.txt
 ```
 </details>
