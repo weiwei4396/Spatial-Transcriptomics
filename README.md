@@ -31,9 +31,8 @@
 
 
 
-
-
-### 吉因加
+## 2. **Other**
+### 2.1 吉因加
 <details>
 <summary> 下载数据 </summary>
 
