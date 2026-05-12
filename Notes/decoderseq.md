@@ -24,8 +24,44 @@ python script1_getBarcodeSR_decoderseq.py \
 pigz -p $Numthread $outPut/DCseqformalMB_S1_L001_R1_001_trim.fastq
 pigz -p $Numthread $outPut/DCseqformalMB_S1_L001_R2_001_trim.fastq
 ```
-其次第二步，使用STARsolo(https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/annData.md) 将过滤后的reads比对到参考基因组。
+其次第二步，使用[STARsolo](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/annData.md) 将过滤后的reads比对到参考基因组。
+```shell
+sampath=./result
+sample=DCseqformalMB_S1_L001
+fastq1=${sampath}/${sample}_R1_001_trim.fastq.gz
+fastq2=${sampath}/${sample}_R2_001_trim.fastq.gz
+# 这个barcode只需要一列，就是所有barcode的组合，假设barcode x有75个, barcode y有75个，那么这个文件就是5625行1列的文本文件。
+whitelist=./result/second_column.txt
+# 注释文件
+MAP=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/star2710b
+ANN=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/genes/genes.gtf
+t_num=32
+ulimit -n 100000
+mkdir ${sampath}/STARsolo
 
+/data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR \
+  --genomeDir ${MAP} \
+  --outFileNamePrefix ${sampath}/STARsolo/${sample}_ \
+  --readFilesCommand pigz -dc \
+  --clipAdapterType CellRanger4 \
+  --readFilesIn ${fastq2} ${fastq1} \
+  --limitGenomeGenerateRAM 100000000000 \
+  --limitBAMsortRAM 100000000000 \
+  --soloType CB_UMI_Simple \
+  --soloCBwhitelist ${whitelist} \
+  --soloCBstart 1 \
+  --soloCBlen 16 \
+  --soloUMIstart 17 \
+  --soloUMIlen 12 \
+  --outSAMtype BAM SortedByCoordinate \
+  --outSAMattributes NH HI nM AS CR UR CY UY CB UB GX GN sS sQ sM sF \
+  --soloFeatures Gene GeneFull SJ Velocyto \
+  --soloMultiMappers EM \
+  --soloUMIdedup 1MM_All \
+  --soloCellFilter EmptyDrops_CR \
+  --runThreadN ${t_num} \
+  --outBAMsortingThreadN ${t_num} \
+```
 最后第3步，从 STARsolo 读取每个 barcode/spot 的基因表达矩阵；再从 barcode_coordinate.txt 读取每个 barcode 对应的芯片网格坐标 (x, y)；根据用户在 H&E 图像上手动提供的三个角点(初始芯片位置的像素坐标)像素坐标，线性推算出整个 75×75 芯片网格中每个网格坐标对应的 H&E 图像像素坐标，这样得到了芯片坐标和像素坐标的哈希表；然后把每个 barcode 的表达矩阵、芯片坐标、像素坐标、组织区域信息和 H&E 图像一起组织成 AnnData，用于后续空间可视化、QC 和分析。
 
 
