@@ -35,24 +35,25 @@ pigz -p 16 CRR1158992_R2_trim.fastq
 ```
 其次第二步，使用[STARsolo](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/annData.md) 将过滤后的reads比对到参考基因组。
 ```shell
-# 1.准备数据和文件;
-sampath=/data/database/MAGIC-seq-NG/20260417_geneadd/gene0417/00.mergeRawFq/RNA20X125Y1/resultYihuan
-sample=RNA20X125Y1_raw
-fastq1=${sampath}/${sample}_R1_trim.fq.gz
-fastq2=${sampath}/${sample}_R2_trim.fq.gz
-# 给定的白名单;
-whitelist=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/whitelist
-ID=/data/database/MAGIC-seq-NG/Olfb/Mouse_Adult_Organ_T9_70_50um/T9-ids-barcode.txt
+# 1.准备数据
+sampath=/data/database/MAGIC-seq-NG/E17-1/resultYihuan
+sample=CRR1158992
+fastq1=${sampath}/${sample}_R1_trim.fastq.gz
+fastq2=${sampath}/${sample}_R2_trim.fastq.gz
+# 给定的白名单
+whitelist=/data/database/MAGIC-seq-NG/E17-1/Barcode-M9-150-E17.5/whitelist.txt
+#ID=/data/database/MAGIC-seq-NG/E17-1/Barcode-M9-150-E17.5/M9_ST_ids_barcode_chip1_C18.txt
+# 参考基因组
 MAP=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/star2710b
 ANN=/data/workdir/panw/reference/mouse/refdata-gex-GRCm39-2024-A/genes/genes.gtf
-# 线程;
+# 线程
 t_num=16
 ulimit -n 100000
 mkdir ${sampath}/STARsolo
 # 2.比对
 /data/workdir/panw/software/STAR-2.7.11b/bin/Linux_x86_64/STAR --genomeDir ${MAP} \
   --outFileNamePrefix ${sampath}/STARsolo/${sample}_ \
-  --readFilesCommand zcat \
+  --readFilesCommand pigz -p 8 -dc \
   --readFilesIn ${fastq2} ${fastq1} \
   --outSAMattributes NH HI nM AS CR UR CY UY CB UB GX GN sS sQ sM sF \
   --outSAMtype BAM SortedByCoordinate \
@@ -60,8 +61,8 @@ mkdir ${sampath}/STARsolo
   --soloType CB_UMI_Simple \
   --soloCBwhitelist ${whitelist} \
   --soloCBstart 1 \
-  --soloCBlen 16 \
-  --soloUMIstart 17 \
+  --soloCBlen 24 \
+  --soloUMIstart 25 \
   --soloUMIlen 12 \
   --soloFeatures Gene GeneFull SJ Velocyto \
   --soloMultiMappers EM \
@@ -72,6 +73,7 @@ mkdir ${sampath}/STARsolo
   --outReadsUnmapped Fastx \
   --runThreadN ${t_num}
 ```
+- 上面的代码是针对的三个barcode的情况，两个barcode的情况同理，可以直接看脚本：[BarcodeXY](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/MAGIC-seq/BarcodeXY.sh) | [BarcodeXYZ](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/MAGIC-seq/BarcodeXYZ.sh)
 - 额外步骤, 提取前5000条序列blastn查看是否有污染
 ```python
 # 脚本/data/database/MAGIC-seq-NG/Spatial-Transcriptomics/MAGIC-seq/1_blast_species.py
@@ -79,6 +81,8 @@ mkdir ${sampath}/STARsolo
 # 最后需要给定nt库
 python 1_blast_species.py -q RNA20X125Y1_raw_R2.fastq.gz -d /data/workdir/zhangj/database/nt_/core/core_nt
 ```
+最后第3步，从STARsolo读取每个barcode/spot的基因表达矩阵；再从barcode_coordinate.txt读取每个barcode对应的芯片网格坐标(x, y)；根据用户在H&E图像上手动提供的三个角点(初始芯片位置的像素坐标)像素坐标，线性推算出整个75×75芯片网格中每个网格坐标对应的H&E图像像素坐标，这样得到了芯片坐标和像素坐标的哈希表；然后把每个barcode的表达矩阵、芯片坐标、像素坐标、组织区域信息和H&E图像一起组织成 AnnData，用于后续空间可视化、QC 和分析。
+
 
 ### MAGIC-seq文章的pipline
 
