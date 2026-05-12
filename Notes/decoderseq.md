@@ -16,7 +16,8 @@ FQ2=DCseqformalMB_S1_L001_R2_001.fastq.gz
 barcode=7.5mm_barcode_coordinate.txt
 outPut=./result
 Numthread=16
-python getBarcode_SR_Decoderseq.py \
+# 脚本在Decoder-seq文件夹中
+python script1_getBarcodeSR_decoderseq.py \
         -i $FQ1 -I $FQ2 \
         -x $barcode \
         -o $outPut
