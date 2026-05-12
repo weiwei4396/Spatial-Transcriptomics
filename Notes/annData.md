@@ -6,6 +6,7 @@
 ## 1.**AnnData**
 
 [AnnData结构](https://raw.githubusercontent.com/weiwei4396/Spatial-Transcriptomics/main/picture/anndata.jpg)
+
 scverse 是一个专注于生命科学基础工具的组织和生态系统，最初聚焦于单细胞数据分析。它的优势在于出色的扩展性、灵活性以及与现有Python数据科学和机器学习工具的强大互操作性。
 
 在scverse生态系统中，AnnData是用来将数据矩阵与这些注释关联起来的核心工具。为了提高效率，AnnData支持稀疏矩阵 (sparse matrices) 和部分读取(partial reading)，这样可以更快地处理大规模数据。AnnData在功能上与R生态系统中的数据结构 (比如Bioconductor的SummarizedExperiment或Seurat对象)相似，但R包通常使用转置后的特征矩阵 (基因 x 细胞)。
@@ -14,7 +15,7 @@ scverse 是一个专注于生命科学基础工具的组织和生态系统，最
 
 AnnData还可以储存很多额外信息。比如，其他关于观测值和变量的多维数据(如UMAP) 储存在obsm和varm中，图结构(比如细胞之间的关系或基因之间的关系)存储在obsp和varp中，任何不适合其他槽位的非结构化数据都可以存储在uns中，还可以通过layers存储矩阵X的额外值。例如，可以在名为counts的层中存储未经标准化的原始计数数据，而在默认的层中存储标准化后的数据。
 
-[AnnData](https://mp.weixin.qq.com/s/0OFRSB3BZcNltHkp_1VG1Q)
+[AnnData参考](https://mp.weixin.qq.com/s/0OFRSB3BZcNltHkp_1VG1Q)
 
 <details>
 <summary> AnnData数据存储信息结构 </summary>
