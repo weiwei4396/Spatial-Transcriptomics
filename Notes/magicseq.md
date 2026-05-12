@@ -4,31 +4,34 @@
 ## **MAGIC-seq脚本解析**
 
 必须准备的文件：两个/三个barcode白名单文件
-- [Spatial_barcodeA150.txt]()：沿用的MAGIC-seq文章数据给定的白名单结构，第一列表示芯片上的位置，第二列表示这个barcode的序列。
+- [Spatial_barcodeA150.txt](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/magicseq_whitelist.png)：沿用的MAGIC-seq文章数据给定的白名单结构，第一列表示芯片上的位置，第二列表示这个barcode的序列。
 - Spatial_barcodeB150.txt：跟barcode x情况类似，且数量相同。
 - Spatial_barcodeC18.txt(看是否有Z轴)：情况也相似，只不过数量很少。
 - 全分辨率的H&E染色图。
 
 分析流程主要包括三步：
-- 1.根据barcode清单提取原始测序数据中有效的barcode。
+- 1.根据barcode清单提取原始测序数据中有效的barcode。[script1_getBarcodeSR_magicseq.py](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/MAGIC-seq/script1_getBarcodeSR_magicseq.py)
 - 2.将有效barcode的reads比对到参考基因组。
 - 3.手动提供三个坐标推算每个芯片坐标的像素坐标，所有信息组织成AnnData，下游分析。
 
 首先第1步，校正1bp错误的barcode，我的脚本只保留了1bp的错配的barcode。思路是将所有的barcode序列中的8个位置分别替换成"AGCTN"，构建真实barcode与所有候选barcode的哈希表，首先判定是否是正确的barcode，然后判定是否是候选1bp错误内的barcode。不满足条件的reads直接丢弃。最后使用pigz压缩为gz文件。
 
 ```shell
-# 添加write_discarded参数可以输出那些barcode不准确的reads, 默认不加这个参数
-barcodeX=/data/database/MAGIC-seq-NG/Spatial-Transcriptomics/bingqi70_X.txt
-barcodeY=/data/database/MAGIC-seq-NG/Spatial-Transcriptomics/bingqi70_Y.txt
-python getBarcode_SR_BroCOLI.py -i R1.fastq.gz -I R2.fastq.gz -x $barcodeX -y $barcodeY -m 2 -o $resultPath --write_discarded
-
-# 加上z之后用法
+FQ1=/data/database/MAGIC-seq-NG/E17-1/CRR1158992_R1.fastq.gz
+FQ2=/data/database/MAGIC-seq-NG/E17-1/CRR1158992_R2.fastq.gz
 barcodeX=/data/database/MAGIC-seq-NG/E17-1/Barcode-M9-150-E17.5/Spatial_barcodeA150.txt
 barcodeY=/data/database/MAGIC-seq-NG/E17-1/Barcode-M9-150-E17.5/Spatial_barcodeB150.txt
 barcodeZ=/data/database/MAGIC-seq-NG/E17-1/Barcode-M9-150-E17.5/Spatial_barcodeC18.txt
-python getBarcode_SR_BroCOLI.py -i R1.fastq.gz -I R2.fastq.gz -x $barcodeX -y $barcodeY -z $barcodeZ -m 3 -o $resultPath --write_discarded
-pigz -p 16 -c DCseqformalMB_S1_L001_R1_001_trim.fastq > DCseqformalMB_S1_L001_R1_001_trim.fastq.gz
-pigz -p 16 -c DCseqformalMB_S1_L001_R2_001_trim.fastq > DCseqformalMB_S1_L001_R2_001_trim.fastq.gz
+resultLinker=/data/database/MAGIC-seq-NG/E17-1/result
+getPY=script1_getBarcodeSR_magicseq.py
+
+python $getPY \
+        -i $FQ1 -I $FQ2 \
+        --bcx $barcodeX --bcy $barcodeY --bcz $barcodeZ \
+        -m 3 -o $resultLinker
+cd result
+pigz -p 16 /data/database/MAGIC-seq-NG/E17-1/result/CRR1158992_R1_trim.fastq
+pigz -p 16 /data/database/MAGIC-seq-NG/E17-1/result/CRR1158992_R2_trim.fastq
 ```
 其次第二步，使用[STARsolo](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/annData.md) 将过滤后的reads比对到参考基因组。
 ```shell
