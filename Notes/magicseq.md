@@ -85,6 +85,7 @@ python 1_blast_species.py -q RNA20X125Y1_raw_R2.fastq.gz -d /data/workdir/zhangj
 - MAGIC-seq的九宫格区域流向不同，决定了barcode的顺序是不同的，这点在脚本中有所体现。如下图所示，在九宫格区域的1，3，7，9，此时x是反向的，y是正向的，从上到下x的顺序是X70到X1。y是从左到右Y1到Y70逐渐递加。九宫格区域的2和8，x和y都是正向，行从上到下X1到X70，列从左到右Y1到Y70。其他的区域同理。
 - 分割算法checkpoint下载地址：[sam_vit_h_4b8939.pth](https://huggingface.co/HCMUE-Research/SAM-vit-h/blob/main/sam_vit_h_4b8939.pth)
 - 每次实验需要登记的7个点，在H&E染色图片中左上和右下两个点，以及明场图像中对应的两个点，以及荧光图中左上，右上和左下的三个spot中心点的像素坐标。所有像素坐标的提取都是使用ImageJ软件读取的(x,y)像素点坐标。
+- geneInfo.txt文件是STARsolo将基因组index时候产生的geneInfo.tab文件，文件的列名称设置为Geneid、Symbol、type。
 
 ![](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/barcode%E9%A1%BA%E5%BA%8F.png)
 ___
