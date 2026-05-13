@@ -84,7 +84,7 @@ python 1_blast_species.py -q RNA20X125Y1_raw_R2.fastq.gz -d /data/workdir/zhangj
 最后第3步，从STARsolo读取每个barcode/spot的基因表达矩阵；再从barcode_coordinate.txt读取每个barcode对应的芯片网格坐标(x, y)；根据用户在H&E图像上手动提供的三个角点(初始芯片位置的像素坐标)像素坐标，线性推算出整个75×75芯片网格中每个网格坐标对应的H&E图像像素坐标，这样得到了芯片坐标和像素坐标的哈希表；然后把每个barcode的表达矩阵、芯片坐标、像素坐标、组织区域信息和H&E图像一起组织成 AnnData，用于后续空间可视化、QC 和分析。
 - MAGIC-seq的九宫格区域流向不同，决定了barcode的顺序是不同的，这点在脚本中有所体现。在九宫格区域的1，3，7，9，此时x是反向的，y是正向的，从上到下x的顺序是X70到X1。y是从左到右Y1到Y70逐渐递加。
 
-![https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/barcode%E9%A1%BA%E5%BA%8F.png]
+![](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/barcode%E9%A1%BA%E5%BA%8F.png)
 ___
 
 ### MAGIC-seq文章的pipline
