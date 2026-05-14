@@ -1,8 +1,11 @@
 ## Content
 - [MAGIC-seq脚本解析](#MAGIC-seq脚本解析)
+- [文章pipeline](#MAGIC-seq文章的pipeline)
+- [自查小脚本](#之前自写的对MAGIC-seq数据排查的脚本)
+- [MAGIC-seq论文解析](#MAGIC-seq论文解析)
 
 ## **MAGIC-seq脚本解析**
-### 我自己写的步骤
+### 自写步骤
 必须准备的文件：两个/三个barcode白名单文件
 - [Spatial_barcodeA150.txt](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/magicseq_whitelist.png)：沿用的MAGIC-seq文章数据给定的白名单结构，第一列表示芯片上的位置，第二列表示这个barcode的序列。
 - Spatial_barcodeB150.txt：跟barcode x情况类似，且数量相同。
@@ -285,8 +288,20 @@ blastn -query ${fa} -db /data/workdir/zhangj/database/nt_/core/core_nt \
 ```python
 python barcodeXXX.py --fq STx170y170z7micebrain_R1.fastq.gz --bcx /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeA150.txt --bcy /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeB150.txt --bcz /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeC18.txt -m 3
 ```
-
 </details>
+___
+
+
+## **MAGIC-seq论文解析**
+
+
+
+
+
+
+
+
+
 
 
 
