@@ -82,7 +82,7 @@ mkdir ${sampath}/STARsolo
 python 1_blast_species.py -q RNA20X125Y1_raw_R2.fastq.gz -d /data/workdir/zhangj/database/nt_/core/core_nt
 ```
 最后第3步，从STARsolo读取每个barcode/spot的基因表达矩阵；再从barcode_coordinate.txt读取每个barcode对应的芯片网格坐标(x, y)；根据用户在H&E图像上手动提供的三个角点(初始芯片位置的像素坐标)像素坐标，线性推算出整个70×70 (150×150) 芯片网格中每个网格坐标对应的H&E图像像素坐标，这样得到了芯片坐标和像素坐标的哈希表；然后把每个barcode的表达矩阵、芯片坐标、像素坐标、组织区域信息和H&E图像一起组织成 AnnData，用于后续空间可视化、QC 和分析。
-- MAGIC-seq的九宫格区域流向不同，决定了barcode的顺序是不同的，这点在脚本中有所体现。如下图所示，在九宫格区域的1，3，7，9，此时x是反向的，y是正向的，从上到下x的顺序是X70到X1。y是从左到右Y1到Y70逐渐递加。九宫格区域的2和8，x和y都是正向，行从上到下X1到X70，列从左到右Y1到Y70。其他的区域同理。
+- MAGIC-seq的九宫格区域流向不同，决定了barcode的顺序是不同的，这点在脚本中有所体现。如下图所示，在九宫格区域的1，3，7，9，此时x是反向的，y是正向的，从上到下x的顺序是X70到X1。y是从左到右Y1到Y70逐渐递加。九宫格区域的2和8，x和y都是正向，行从上到下X1到X70，列从左到右Y1到Y70。其他的区域同理。**实际情况应该与实验人员沟通，最终确认这个关系**
 - 分割算法checkpoint下载地址：[sam_vit_h_4b8939.pth](https://huggingface.co/HCMUE-Research/SAM-vit-h/blob/main/sam_vit_h_4b8939.pth)
 - 每次实验需要登记的7个点，在H&E染色图片中左上和右下两个点，以及明场图像中对应的两个点，以及荧光图中左上，右上和左下的三个spot中心点的像素坐标。所有像素坐标的提取都是使用ImageJ软件读取的(x,y)像素点坐标，**需要注意是的，在ImageJ中读取的(x,y)，在我们输入的时候需要输入(y,x)**。明场图像(marker.png)和荧光图像(spot.png)是在同一个坐标系之下，但是H&E染色图(HE.png)是在另一个坐标系之下，两者需要做图像配准。
 - geneInfo.txt文件是STARsolo将基因组index时候产生的geneInfo.tab文件，文件的列名称设置为Geneid、Symbol、type。
