@@ -10,10 +10,16 @@
 [SpaceRanger](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/SpaceRanger.md)
 
 ### 1.2 📘Decoder-seq
-[自写Decoder-seq脚本笔记](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/decoderseq.md)
+[自写Decoder-seq脚本笔记](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/decoderseq.md) | [Paper-Decoder-seq](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/decoderseq.md)
 
 ### 1.3 📘MAGIC-seq
-[自写MAGIC-seq脚本笔记](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/magicseq.md)
+[自写MAGIC-seq脚本笔记](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/magicseq.md) | [Paper-MAGIC-seq](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/magicseq.md)
+
+
+
+## 2. **Paper**
+#### 2026
+[Cell-Whole-mouse spatial transcriptomics](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/Notes/Paper2026.md)
 
 
 
@@ -26,13 +32,8 @@
 
 
 
-
-
-
-
-
-## 2. **Other**
-### 2.1 吉因加
+## 3. **Other**
+### 3.1 吉因加
 <details>
 <summary> 下载数据 </summary>
 
