@@ -86,6 +86,7 @@ python 1_blast_species.py -q RNA20X125Y1_raw_R2.fastq.gz -d /data/workdir/zhangj
 - 分割算法checkpoint下载地址：[sam_vit_h_4b8939.pth](https://huggingface.co/HCMUE-Research/SAM-vit-h/blob/main/sam_vit_h_4b8939.pth)
 - 每次实验需要登记的7个点，在H&E染色图片中左上和右下两个点，以及明场图像中对应的两个点，以及荧光图中左上，右上和左下的三个spot中心点的像素坐标。所有像素坐标的提取都是使用ImageJ软件读取的(x,y)像素点坐标，**需要注意是的，在ImageJ中读取的(x,y)，在我们输入的时候需要输入(y,x)**。明场图像(marker.png)和荧光图像(spot.png)是在同一个坐标系之下，但是H&E染色图(HE.png)是在另一个坐标系之下，两者需要做图像配准。
 - geneInfo.txt文件是STARsolo将基因组index时候产生的geneInfo.tab文件，文件的列名称设置为Geneid、Symbol、type。
+- 新数据跑的时候，最需要关注的就是两个文件，他们是等价的：**T9-ids-barcode.txt**，**M9_ST_info_barcode_chip1_C18.csv**。
 
 ![](https://github.com/weiwei4396/Spatial-Transcriptomics/blob/main/picture/barcode%E9%A1%BA%E5%BA%8F.png)
 ___
