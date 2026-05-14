@@ -289,7 +289,7 @@ blastn -query ${fa} -db /data/workdir/zhangj/database/nt_/core/core_nt \
 python barcodeXXX.py --fq STx170y170z7micebrain_R1.fastq.gz --bcx /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeA150.txt --bcy /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeB150.txt --bcz /data/database/MAGIC-seq-NG/P0-1/Barcode-M9-150-P04/Spatial_barcodeC18.txt -m 3
 ```
 </details>
-___
+---
 
 
 ## **MAGIC-seq论文解析**
