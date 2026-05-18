@@ -366,7 +366,7 @@ def main():
         )
 
         print(
-            f"barcode corrected any X/Y/z: {stats['corrected_any']}, "
+            f"barcode corrected any X/Y/Z: {stats['corrected_any']}, "
             f"ratio among total: {pct(stats['corrected_any'], total):.4f}%, "
             f"ratio among kept: {pct(stats['corrected_any'], kept):.4f}%"
         )
